@@ -1,0 +1,52 @@
+extends layout
+
+block content
+  h1 Gestión de pacientes
+  p Acá podremos administrar los datos de los pacientes.
+
+  
+  link(rel='stylesheet', href='https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css')
+
+  table#tablaPacientes.display
+    thead
+      tr
+        th Nombre
+        th Apellido
+        th Sexo
+        th Edad
+        th DNI
+        th Peso 
+        th Altura 
+        th Obra Social
+        th Fecha de Nacimiento
+        th Dirección
+        th Teléfono
+        th Contacto de Emergencia
+    tbody
+      each paciente in pacientes
+        tr
+          td= paciente.Nombre
+          td= paciente.Apellido
+          td= paciente.Sexo
+          td= paciente.Edad
+          td= paciente.DNI
+          td= paciente.Peso
+          td= paciente.Altura
+          td= paciente.Obra_Social ? 'Sí' : 'No'
+          td= paciente.Fecha_Nacimiento.toISOString().split('T')[0]
+          td= paciente.Direccion
+          td= paciente.Telefono
+          td= paciente.Contacto_Emergencia
+
+  // Scripts: fuera del tbody
+  script(src='https://code.jquery.com/jquery-3.6.0.min.js')
+  script(src='https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js')
+  script.
+    $(document).ready(function () {
+      $('#tablaPacientes').DataTable({
+        responsive: true,
+        language: {
+          url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        }
+      });
+    });

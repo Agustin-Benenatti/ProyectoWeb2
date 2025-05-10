@@ -1,0 +1,64 @@
+doctype html
+html
+  head
+    style.
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+      }
+
+      .sidebar {
+        width: 220px;
+        background-color: #2c3e50;
+        color: white;
+        height: 100vh;
+        padding-top: 20px;
+        position: fixed;
+        text-align: center;
+      }
+
+      .sidebar img {
+        width: 120px;
+        margin-bottom: 20px;
+      }
+
+      .sidebar a {
+        display: block;
+        color: white;
+        padding: 15px 20px;
+        text-decoration: none;
+        transition: background-color 0.3s;
+        text-align: left;
+      }
+
+      .sidebar a:hover {
+        background-color: #34495e;
+      }
+
+      .main-content {
+        margin-left: 220px;
+        padding: 20px;
+        flex-grow: 1;
+        min-height: 100vh;
+      }
+
+      .fondo-hospital {
+        background-image: url('/images/fondo.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #fff;
+      }
+
+  body
+    .sidebar
+      img(src='/images/his-logo.png', alt='HIS Logo')
+      a(href='/') Inicio
+      a(href='/pacientes/') Pacientes
+      a(href='/personal-medico') Personal Médico
+      a(href='/personal-enfermeria') Personal de Enfermería
+      a(href='/usuarios') Usuarios
+
+    .main-content(class=mainClass)
+      block content
