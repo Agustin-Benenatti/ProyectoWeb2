@@ -1,5 +1,6 @@
 const {Model , DataTypes} = require("sequelize");
 const sequelize = require("../config/db")
+const ObraSocial = require("./ObraSocialModels")
 
 
 
@@ -7,61 +8,66 @@ class Paciente extends Model {}
 
 Paciente.init(
     {
-        id_Paciente: {
+        id_paciente: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        Nombre:{
+        id_obra_social: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: ObraSocial,
+                key: "id_obra_social",
+            },
+            onDelete: "CASCADE",
+        },
+        nombre:{
             type: DataTypes.STRING,
             allowNull: false,
         },
-        Apellido: {
+        apellido: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        Sexo: {
+        sexo: {
             type: DataTypes.STRING,
             allowNull: false,
 
         },
-        Edad: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },
-        DNI: {
+        dni: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
         },
-        Peso: {
+        peso: {
             type: DataTypes.FLOAT,
             allowNull: true,
         },
-        Altura: {
+        altura: {
             type: DataTypes.FLOAT,
             allowNull: false,
         },
-        Obra_Social: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
-        },
-        Fecha_Nacimiento: {
+       
+        fecha_nacimiento: {
             type: DataTypes.DATE,
             allowNull: false,
         },
-        Direccion: {
+        direccion: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        Telefono: {
+        telefono: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        Contacto_Emergencia: {
-            type: DataTypes.STRING,
-            allowNull:false,
-        }
+       
+        estado: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+
+        },
 
 
 
@@ -69,6 +75,8 @@ Paciente.init(
     {
         sequelize,
         modelName: "Paciente",
+        tableName: "paciente",
+        freezeTableName: true,
         timestamps: false,
     }
 )

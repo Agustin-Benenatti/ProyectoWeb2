@@ -6,29 +6,36 @@ class Enfermero extends Model {};
 
 Enfermero.init (
     {
-        id_Enfermero: {
+        id_enfermero: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        nro_Matricula:{
+        nro_matricula:{
             type: DataTypes.INTEGER,
             allowNull: false,
             unique: true,
 
         },
-        Nombre: {
+        nombre: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        Apellido: {
+        apellido: {
             type: DataTypes.STRING,
             allowNull: false,
-        }
+        },
+         estado: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+        },
     },
     {
         sequelize,
         modelName: "Enfermero",
+        tableName: "enfermero",
+        freezeTableName: true,
         timestamps: false,
     }
 )

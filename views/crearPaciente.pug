@@ -1,0 +1,135 @@
+extends layout 
+
+block head
+  style.
+    form {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 2px solid #1976d2;
+      border-radius: 8px;
+      background-color: #f4f6f9;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1976d2;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+
+    .campo {
+      flex: 1;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      width: 100%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #1976d2;
+      outline: none;
+    }
+
+    button[type="submit"] {
+      padding: 10px 20px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+block content 
+  div 
+    h1 Nuevo Paciente
+
+    form(action="/pacientes/cargar", method="POST") 
+
+      .form-row
+        .campo
+          label(for="nombre") Nombre:
+          input(type="text" name="Nombre" placeholder="Ej: Juancito" required)
+        .campo
+          label(for="apellido") Apellido:
+          input(type="text" name="Apellido" placeholder="Ej: Perez" required)
+
+      .form-row
+        .campo
+          label(for="sexo") Sexo 
+          select(name="Sexo" required)
+            option(value="" disable selected) ----Seleccionar----
+            option(value="Masculino") Masculino
+            option(value="Femenino") Femenino
+            option(value="Otro") Otro
+        .campo
+          label(for="dni") DNI: 
+          input(type="text" name="DNI" placeholder='Ej: 44.123.789' required)
+
+      .form-row
+        .campo
+          label(for="peso") Peso: 
+          input(type="number" name="Peso" placeholder="Ej: 80kg" required min="0")
+        .campo
+          label(for="altura") Altura: 
+          input(type="number" name="Altura" placeholder="Ej: 1,80" required min="0")
+
+      .form-row
+        .campo
+          label(for="Obra_Social") Obra Social(Mutual) 
+          select(name="Obra_Social" required)
+            option(value="" disable selected) ----Seleccionar----
+            option(value="DOSEP") DOSEP
+            option(value="OSDEPYM") OSDEPYM
+            option(value="OSMATA") OSMATA
+            option(value="OSPLAD") OSPLAD
+            option(value="PAMI") PAMI
+            option(value="NO TIENE") NO TIENE
+        .campo
+          label(for="fechaNacimiento") Fecha de Nacimiento: 
+          input(type="date" name="Fecha_Nacimiento" required)
+
+      .form-row
+        .campo
+          label(for="direccion") Dirección: 
+          input(type="text" name="Direccion" placeholder="Ej: Calle falsa 123" required)
+        .campo
+          label(for="telefono") Teléfono: 
+          input(type="text" name="Telefono" placeholder="Ej: 2664-020100")
+
+      .form-row
+        .campo
+          label(for="contactoEmergencia") Contacto de Emergencia: 
+          input(type="text" name="Contacto_Emergencia" required)
+        .campo
+          label(for="estado") Estado 
+          select(name="Estado" required)
+            option(value="true") Activo 
+            option(value="false") Inactivo
+
+      div(style="text-align: center; margin-top: 20px;")
+        button(type="submit") Guardar Paciente

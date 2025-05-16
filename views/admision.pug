@@ -1,0 +1,55 @@
+extends layout
+
+block head
+  style.
+    .panel {
+      width: 300px;
+      padding: 20px;
+      margin: 40px;
+      background-color: #f4f6f9;
+      border: 2px solid #1976d2;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .panel h1 {
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .boton {
+      display: inline-block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px 20px;
+      background-color: #1976d2;
+      color: white;
+      text-align: center;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    .boton:hover {
+      background-color: #1565c0;
+    }
+
+block content
+  .panel
+    h1 Panel de Admisión
+
+    form(action='/pacientes/crearPaciente', method='get')
+      button(type='submit', class='boton') Cargar Paciente
+
+    form(action='/admision', method='get')
+      button(type='submit', class='boton') Generar Admision 
+
+    form(action='/habitaciones', method='get')
+      button(type='submit', class='boton') Consultar Habitación
+
+    form(action='/internacion', method='get')
+      button(type='submit', class='boton') Internación

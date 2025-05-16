@@ -9,12 +9,17 @@ app.set('view engine','pug');
 app.set('views','./views');
 
 app.use(express.static('public'));
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/pacientes', pacienteRoutes);
 
 app.get('/',(req,res) => {
     
     res.render('index',{mainClass: 'fondo-hospital'});
+});
+
+app.get('/admision', (req, res) => {
+    res.render('admision', {mainClass: ''})
 });
 
 

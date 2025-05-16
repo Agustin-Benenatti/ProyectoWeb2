@@ -2,50 +2,59 @@ const {Model, DataTypes} = require("sequelize");
 const sequelize = require("../config/db")
 const Paciente = require("./PacienteModels");
 const Habitacion = require("./HabitacionModels");
+const MotivoInternacion = require("./MotivoInternacionModels");
 
 class Internacion extends Model {};
 
 Internacion.init (
     {
-        id_Internacion: {
+        id_internacion: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        id_Habitacion: {
+        id_habitacion: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
                 model: Habitacion,
-                key: "id_Habitacion",
+                key: "id_habitacion",
             },
             onDelete: "CASCADE",
         },
-        id_Paciente: {
+        id_paciente: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
                 model: Paciente,
-                key: "id_Paciente",
+                key: "id_paciente",
             },
             onDelete: "CASCADE",
         },
-        Fecha_Ingreso: {
+        id_motivo_internacion: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: MotivoInternacion,
+                key:"id_motivo_internacion",
+            },
+            onDelete: "CASCADE",
+        },
+        fecha_ingreso: {
             type: DataTypes.DATE,
             allowNull:false,
         },
-        Fecha_Salida: {
+        fecha_salida: {
             type: DataTypes.DATE,
             allowNull: true,
         },
-        Diagnostico: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
+       
     },
     {
         sequelize,
         modelName: "Internacion",
+        tableName: "internacion",
+        freezeTableName: true,
         timestamps: false,
     }
 )

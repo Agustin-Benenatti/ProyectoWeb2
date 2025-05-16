@@ -1,46 +1,46 @@
 const {Model,DataTypes} = require("sequelize");
 const sequelize = require("../config/db");
-const Ala = require("./AlaModels");
+const Paciente = require("./PacienteModels")
 
 
+class ContactoEmergencia extends Model {}
 
-class Habitacion extends Model {};
-
-Habitacion.init (
+ContactoEmergencia.init(
     {
-        id_habitacion: {
+        id_contacto: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
-        }, 
-        id_ala:{
+        },
+        id_paciente: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: Ala,
-                key: "id_ala",
+                model: Paciente,
+                key: "id_paciente",
             },
             onDelete: "CASCADE",
         },
-        nro_habitacion: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-        },       
-        sexo_habitacion: {
+        nombre_contacto: {
             type: DataTypes.STRING,
-            allowNull: true,
+            allowNull: false,
         },
-        estado: {
-            type: DataTypes.BOOLEAN,
+        telefono: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        relacion: {
+            type: DataTypes.STRING,
             allowNull: false,
         },
     },
     {
         sequelize,
-        modelName: "Habitacion",
-        tableName: "habitacion",
+        modelName:"ContactoEmergencia",
+        tableName:"contacto_emergencia",
         freezeTableName: true,
         timestamps: false,
     }
 )
-module.exports = Habitacion;
+
+module.exports = ContactoEmergencia;

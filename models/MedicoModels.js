@@ -1,5 +1,6 @@
 const {Model,DataTypes} = require("sequelize");
-const sequelize = require("../config/db")
+const sequelize = require("../config/db");
+const Especializacion = require("./EspecializacionModels")
 
 
 
@@ -7,33 +8,46 @@ class Medico extends Model {};
 
 Medico.init (
     {
-        id_Medico: {
+        id_medico: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
             primaryKey: true,
         },
-        nro_Matricula:{
+        id_especializacion: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: Especializacion,
+                key: "id_especializacion",
+            },
+            onDelete: "CASCADE",
+        },
+        nro_matricula:{
             type: DataTypes.INTEGER,
             allowNull: false,
             unique: true,
         },
-        Nombre: {
+        nombre: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        Apellido: {
+        apellido: {
             type: DataTypes.STRING,
             allowNull: false,
         },
-        Especializacion: {
-            type: DataTypes.STRING,
+     
+        estado: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true,
             allowNull: false,
-        }
+        },
 
     },
     {
         sequelize,
         modelName: "Medico",
+        tableName: "medico",
+        freezeTableName: true,
         timestamps: false,
     }
 )
