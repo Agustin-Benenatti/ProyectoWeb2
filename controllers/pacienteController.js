@@ -1,14 +1,20 @@
 const Paciente  = require('../models/PacienteModels');
+const ObraSocial = require('../models/ObraSocialModels');
 
 const obtenerPacientes = async () => {
-  return await Paciente.findAll();
+  return await Paciente.findAll({
+    include: {
+      model: ObraSocial,
+      attributes: ['nombre']  //solo traigo el nombre de la tabla obra_social para mostrarlo 
+    }
+  });
 
 };
 
 const crearPaciente = async (data) => {
   try {
     // Validación simple para campos requeridos
-    const camposObligatorios = ['nombre', 'apellido', 'sexo', 'dni', 'altura', 'peso','obra_social', 'Fecha_Nacimiento', 'Direccion', 'Telefono',];
+    const camposObligatorios = ['nombre', 'apellido', 'sexo', 'dni', 'altura', 'peso', 'fecha_nacimiento', 'direccion', 'telefono',];
     
     // Verificar que todos los campos obligatorios estén presentes
     for (let campo of camposObligatorios) {
@@ -16,12 +22,23 @@ const crearPaciente = async (data) => {
         throw new Error(`El campo ${campo} es obligatorio`);
       }
     }
+    //si el paciente no tiene obra social o viene vacio, le asigno null para que no me tire error FK
+     if (!data.id_obra_social || data.id_obra_social === '') {
+      data.id_obra_social = null;
+     }
 
     // Si todos los campos son válidos, crea el paciente
     await Paciente.create(data);
   } catch (error) {
-    console.error('Error al crear paciente:', error);
-    throw error; // Vuelve a lanzar el error para que pueda ser manejado en el controlador de rutas
+    if (error.original && error.original.code === 'ER_DUP_ENTRY' && error.original.sqlMessage.includes('paciente.dni')) {
+      // Error de DNI duplicado
+      const mensajeError = 'Ya existe un paciente con ese DNI.';
+      console.error(mensajeError);
+      throw new Error(mensajeError);  
+    } else {
+      console.error('Error al crear paciente:', error);
+      throw error; // Otros errores
+    }
   }
 };
 module.exports = {

@@ -11,7 +11,7 @@ ObraSocial.init(
             autoIncrement: true,
             primaryKey: true,
         },
-        descripcion: {
+        nombre: {
             type: DataTypes.STRING,
             allowNull: false
         },

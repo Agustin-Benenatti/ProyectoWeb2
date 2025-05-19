@@ -18,19 +18,19 @@ block content
         th Fecha de Nacimiento
         th Dirección
         th Teléfono
-        th Contacto de Emergencia
+        
     tbody
       each paciente in pacientes
         tr
-          td= paciente.Nombre
-          td= paciente.Apellido
-          td= paciente.Sexo
-          td= paciente.DNI
-          td= paciente.Obra_Social ? 'Sí' : 'No'
-          td= paciente.Fecha_Nacimiento.toISOString().split('T')[0]
-          td= paciente.Direccion
-          td= paciente.Telefono
-          td= paciente.Contacto_Emergencia
+          td= paciente.nombre
+          td= paciente.apellido
+          td= paciente.sexo
+          td= paciente.dni
+          td= paciente.ObraSocial ? paciente.ObraSocial.nombre : 'No tiene'
+          td= paciente.fecha_nacimiento.toISOString().split('T')[0]
+          td= paciente.direccion
+          td= paciente.telefono
+          
 
   // Scripts: fuera del tbody
   script(src='https://code.jquery.com/jquery-3.6.0.min.js')

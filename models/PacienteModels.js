@@ -15,7 +15,7 @@ Paciente.init(
         },
         id_obra_social: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             references: {
                 model: ObraSocial,
                 key: "id_obra_social",
