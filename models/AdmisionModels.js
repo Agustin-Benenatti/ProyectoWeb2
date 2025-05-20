@@ -1,7 +1,6 @@
 const {Model, DataTypes} = require("sequelize");
 const sequelize = require("../config/db")
 const Paciente = require("./PacienteModels");
-const Internacion = require("./InternacionModels");
 const TipoAdmision = require("./TipoAdmisionModels");
 
 
@@ -23,15 +22,7 @@ Admision.init (
             },
             onDelete: "CASCADE",
         },
-        id_internacion: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            references: {
-                model: Internacion,
-                key: "id_internacion",
-            },
-            onDelete: "CASCADE",
-        },
+      
         id_tipo_admision: {
             type: DataTypes.INTEGER,
             allowNull: false,

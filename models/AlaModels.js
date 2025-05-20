@@ -16,10 +16,6 @@ Ala.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        ubicacion: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
     },
     {
         sequelize,

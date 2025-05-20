@@ -1,8 +1,8 @@
 const {Model, DataTypes} = require("sequelize");
 const sequelize = require("../config/db")
-const Paciente = require("./PacienteModels");
 const Habitacion = require("./HabitacionModels");
 const MotivoInternacion = require("./MotivoInternacionModels");
+const Admision = require("./AdmisionModels");
 
 class Internacion extends Model {};
 
@@ -22,12 +22,12 @@ Internacion.init (
             },
             onDelete: "CASCADE",
         },
-        id_paciente: {
+        id_admision: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: Paciente,
-                key: "id_paciente",
+                model: Admision,
+                key: "id_admision",
             },
             onDelete: "CASCADE",
         },
@@ -47,6 +47,10 @@ Internacion.init (
         fecha_salida: {
             type: DataTypes.DATE,
             allowNull: true,
+        },
+        estado: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
         },
        
     },

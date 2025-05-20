@@ -41,8 +41,39 @@ const crearPaciente = async (data) => {
     }
   }
 };
+
+// obtener el paciente por el id 
+const obtenerPacientePorId = async (id) => {
+  return await Paciente.findByPk(id);
+};
+
+// editar paciente
+const editarPaciente = async (id, data) => {
+  try {
+    const paciente = await Paciente.findByPk(id);
+    if (!paciente) {
+      throw new Error('Paciente no encontrado');
+    }
+
+    if (!data.id_obra_social || data.id_obra_social === '') {
+      data.id_obra_social = null;
+    }
+
+    await paciente.update(data);
+  } catch (error) {
+    if (error.original?.code === 'ER_DUP_ENTRY' && error.original.sqlMessage.includes('paciente.dni')) {
+      throw new Error('Ya existe un paciente con ese DNI.');
+    } else {
+      console.error('Error al editar paciente:', error);
+      throw error;
+    }
+  }
+};
+
 module.exports = {
   obtenerPacientes,
-  crearPaciente
+  crearPaciente,
+  obtenerPacientePorId,
+  editarPaciente
 };
 
