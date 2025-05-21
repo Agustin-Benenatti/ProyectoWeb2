@@ -36,6 +36,12 @@ Admision.init (
             type: DataTypes.DATE,
             allowNull: false,
         },
+           estado: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true,
+
+        },
        
     },
     {

@@ -2,6 +2,7 @@ const express = require('express');
 const pug = require('pug');
 const app = express();
 const pacienteRoutes = require('./route/pacienteRoutes');
+const admisionRoutes = require('./route/admisionRoutes')
 
 require('./config/asociaciones');
 
@@ -18,10 +19,7 @@ app.get('/',(req,res) => {
     res.render('index',{mainClass: 'fondo-hospital'});
 });
 
-app.get('/admision', (req, res) => {
-    res.render('admision', {mainClass: ''})
-});
-
+app.use('/admision', admisionRoutes);
 
 
 app.get('/personal-medico',(req, res) => {

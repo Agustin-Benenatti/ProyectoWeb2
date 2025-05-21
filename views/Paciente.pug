@@ -80,7 +80,7 @@ block content
           td= paciente.estado ? 'Activo' : 'Inactivo'
           td 
             a(href=`/pacientes/editar/${paciente.id_paciente}`, class='btn-editar') Modificar
-            a(href=`/pacientes/bajaPaciente/${paciente.id_paciente}`, class='btn-eliminar', onclick='return confirm("¿Estás seguro que querés dar de baja a este paciente?");')= paciente.estado ? 'Baja' : 'Activar'
+            a(href=`/pacientes/baja/${paciente.id_paciente}`, class='btn-eliminar', onclick='return confirm("¿Estás seguro que querés dar de baja a este paciente?");')= paciente.estado ? 'Baja' : 'Activar'
           
 
   // Scripts: fuera del tbody

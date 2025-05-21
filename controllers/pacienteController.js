@@ -1,79 +1,102 @@
-const Paciente  = require('../models/PacienteModels');
+const Paciente = require('../models/PacienteModels');
 const ObraSocial = require('../models/ObraSocialModels');
 
-const obtenerPacientes = async () => {
-  return await Paciente.findAll({
-    include: {
-      model: ObraSocial,
-      attributes: ['nombre']  //solo traigo el nombre de la tabla obra_social para mostrarlo 
-    }
-  });
-
-};
-
-const crearPaciente = async (data) => {
+// Mostrar todos los pacientes
+const mostrarPacientes = async (req, res) => {
   try {
-    // Validación simple para campos requeridos
-    const camposObligatorios = ['nombre', 'apellido', 'sexo', 'dni', 'altura', 'peso', 'fecha_nacimiento', 'direccion', 'telefono',];
-    
-    // Verificar que todos los campos obligatorios estén presentes
-    for (let campo of camposObligatorios) {
-      if (!data[campo]) {
-        throw new Error(`El campo ${campo} es obligatorio`);
-      }
-    }
-    //si el paciente no tiene obra social o viene vacio, le asigno null para que no me tire error FK
-     if (!data.id_obra_social || data.id_obra_social === '') {
-      data.id_obra_social = null;
-     }
-
-    // Si todos los campos son válidos, crea el paciente
-    await Paciente.create(data);
+    const pacientes = await Paciente.findAll({
+      include: { model: ObraSocial, attributes: ['nombre'] }
+    });
+    res.render('Paciente', { mainClass: '', pacientes });
   } catch (error) {
-    if (error.original && error.original.code === 'ER_DUP_ENTRY' && error.original.sqlMessage.includes('paciente.dni')) {
-      // Error de DNI duplicado
-      const mensajeError = 'Ya existe un paciente con ese DNI.';
-      console.error(mensajeError);
-      throw new Error(mensajeError);  
-    } else {
-      console.error('Error al crear paciente:', error);
-      throw error; // Otros errores
-    }
+    console.error('Error al obtener pacientes:', error);
+    res.status(500).send('Error al obtener pacientes');
   }
 };
 
-// obtener el paciente por el id 
-const obtenerPacientePorId = async (id) => {
-  return await Paciente.findByPk(id);
+// Mostrar formulario para crear paciente
+const mostrarFormularioCrear = async (req, res) => {
+  try {
+    const obrasSociales = await ObraSocial.findAll();
+    res.render('crearPaciente', { mainClass: '', obrasSociales });
+  } catch (error) {
+    console.error('Error al cargar obras sociales:', error);
+    res.status(500).send('Error al cargar formulario');
+  }
 };
 
-// editar paciente
-const editarPaciente = async (id, data) => {
+// Crear paciente
+const crearPaciente = async (req, res) => {
   try {
-    const paciente = await Paciente.findByPk(id);
-    if (!paciente) {
-      throw new Error('Paciente no encontrado');
-    }
+    const data = req.body;
 
     if (!data.id_obra_social || data.id_obra_social === '') {
       data.id_obra_social = null;
     }
 
-    await paciente.update(data);
+    await Paciente.create(data);
+    res.redirect('/pacientes');
   } catch (error) {
-    if (error.original?.code === 'ER_DUP_ENTRY' && error.original.sqlMessage.includes('paciente.dni')) {
-      throw new Error('Ya existe un paciente con ese DNI.');
-    } else {
-      console.error('Error al editar paciente:', error);
-      throw error;
+    console.error('Error al crear paciente:', error);
+    res.status(400).send(error.message);
+  }
+};
+
+// Mostrar formulario de edición
+const mostrarFormularioEditar = async (req, res) => {
+  try {
+    const paciente = await Paciente.findByPk(req.params.id);
+    const obrasSociales = await ObraSocial.findAll();
+
+    if (!paciente) return res.status(404).send('Paciente no encontrado');
+
+    res.render('modificarPaciente', { mainClass: '', obrasSociales, paciente });
+  } catch (error) {
+    console.error('Error al cargar paciente:', error);
+    res.status(500).send('Error al cargar paciente');
+  }
+};
+
+// Editar paciente
+const editarPaciente = async (req, res) => {
+  try {
+    const paciente = await Paciente.findByPk(req.params.id);
+    if (!paciente) return res.status(404).send('Paciente no encontrado');
+
+    const data = req.body;
+    if (!data.id_obra_social || data.id_obra_social === '') {
+      data.id_obra_social = null;
     }
+
+    await paciente.update(data);
+    res.redirect('/pacientes');
+  } catch (error) {
+    console.error('Error al editar paciente:', error);
+    res.status(400).send(error.message);
+  }
+};
+
+// Baja logica
+const bajaLogica = async (req, res) => {
+  try {
+    const paciente = await Paciente.findByPk(req.params.id);
+    if (!paciente) return res.status(404).send('Paciente no encontrado');
+
+    paciente.estado = !paciente.estado;
+    await paciente.save();
+
+    res.redirect('/pacientes');
+  } catch (error) {
+    console.error('Error al cambiar estado del paciente:', error);
+    res.status(500).send('Error al cambiar estado');
   }
 };
 
 module.exports = {
-  obtenerPacientes,
+  mostrarPacientes,
+  mostrarFormularioCrear,
   crearPaciente,
-  obtenerPacientePorId,
-  editarPaciente
+  mostrarFormularioEditar,
+  editarPaciente,
+  bajaLogica
 };
-

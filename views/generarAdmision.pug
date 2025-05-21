@@ -1,0 +1,160 @@
+extends layout
+
+block head
+  style.
+    body {
+      background-color: #eef1f5;
+      font-family: sans-serif;
+    }
+
+    .form-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 600px;
+      padding: 30px;
+      background: #f4f6f9;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1976d2;
+      margin-bottom: 25px;
+      font-size: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    select {
+      width: 90%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .form-control-static {
+      background: #e9ecef;
+      padding: 8px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background-color: #145aa3;
+    }
+
+    .alert {
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 15px;
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .btn-success {
+      display: block;
+      margin: 10px auto;
+      background-color: #28a745;
+      color: white;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      text-align: center;
+      width: fit-content;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+    }
+
+block content
+  .form-wrapper
+    .form-container
+      h1 Nueva Admisión
+
+      if mensajeExito
+        .alert(style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; padding: 10px; margin-bottom: 20px; text-align: center;")
+          = mensajeExito
+
+      form(action="/admision/buscar-paciente" method="POST")
+        .form-group
+          label(for="dni") Buscar por DNI:
+          input#dni(type="text", name="dni", required placeholder="Ej: 30123456")
+        button(type="submit") Buscar Paciente
+
+      if paciente
+        form(action="/admision/crear" method="POST")
+          input(type="hidden", name="id_paciente", value=paciente.id_paciente)
+
+          .form-group
+            label Paciente:
+            p.form-control-static #{paciente.nombre} #{paciente.apellido} (DNI: #{paciente.dni})
+
+          .form-group
+            label(for="fecha_admision") Fecha de Admisión:
+            input#fecha_admision(type="date", name="fecha_admision", required)
+
+          .form-group
+            label(for="estado") Estado:
+            select#estado(name="estado", required)
+              option(value="1") Confirmada
+              option(value="0") Cancelada
+
+          .form-group
+            label(for="id_tipo_admision") Tipo de Admisión:
+            select#id_tipo_admision(name="id_tipo_admision", required)
+              each tipo in tiposAdmision
+                option(value=tipo.id_tipo_admision)= tipo.nombre
+
+          button(type="submit") Guardar Admisión
+
+      else if mensaje
+        .alert= mensaje
+        a.btn-success(href="/pacientes/crear") Cargar nuevo paciente
+
+  script.
+      // hace que el mensaje desaparezca
+      setTimeout(() => {
+        const alert = document.querySelector('.alert');
+        if (alert) {
+          alert.style.transition = 'opacity 0.5s ease-out';
+          alert.style.opacity = '0';
+          setTimeout(() => alert.remove(), 500);
+        }
+      }, 3000);
