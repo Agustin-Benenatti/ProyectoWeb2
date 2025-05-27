@@ -21,6 +21,10 @@ Cama.init (
             },
             onDelete: "CASCADE",
         },
+        numero_cama: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
         estado: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

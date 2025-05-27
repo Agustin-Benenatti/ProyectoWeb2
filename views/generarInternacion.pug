@@ -1,0 +1,158 @@
+extends layout
+
+block head
+  style.
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background-color: #f9f9f9;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .form-control,
+    .form-control-static {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .form-control-static {
+      background-color: #e9ecef;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+
+    .btn-secondary {
+      background-color: #6c757d;
+      border: none;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
+
+block content
+  .container
+    h1 Nueva Internación para #{admision.Paciente.nombre} #{admision.Paciente.apellido}
+
+    form(action="/internacion/crear" method="POST")
+      input(type="hidden" name="id_admision" value=admision.id_admision)
+
+      .form-group
+        label Paciente:
+        p.form-control-static #{admision.Paciente.nombre} #{admision.Paciente.apellido}
+
+      .form-group
+        label DNI:
+        p.form-control-static #{admision.Paciente.dni}
+
+      .form-group
+        label Fecha de admisión:
+        p.form-control-static #{admision.fecha_admision.toISOString().split('T')[0]}
+
+      .form-group
+        label(for="ala") Ala
+        select#ala.form-control(name="ala" required onchange="filtrarHabitaciones()")
+            option(value="" disabled selected) Seleccione un ala
+            each ala in alas
+                option(value=ala.id_ala)=ala.nombre_ala
+
+      .form-group
+        label(for="id_habitacion") Habitación
+        select#id_habitacion.form-control(name="id_habitacion" required onchange="filtrarCamas()")
+          option(value="" disabled selected) Seleccione una habitación
+
+      .form-group
+        label(for="id_cama") Cama
+        select#id_cama.form-control(name="id_cama" required)
+          option(value="" disabled selected) Seleccione una cama
+
+      .form-group
+        label(for="id_motivo_internacion") Motivo de Internación
+        select#id_motivo_internacion.form-control(name="id_motivo_internacion" required)
+          option(value="" disabled selected) Seleccione un motivo
+          each motivo in motivos
+            option(value=motivo.id_motivo_internacion)= motivo.nombre_motivo
+
+      .form-group
+        label(for="fecha_ingreso") Fecha de Ingreso
+        input#fecha_ingreso.form-control(type="date" name="fecha_ingreso" required value=new Date().toISOString().split('T')[0])
+
+      input(type="hidden" name="estado" value="true")
+
+      button.btn.btn-primary(type="submit") Confirmar Internación
+      a.btn.btn-secondary(href="/internacion") Cancelar
+
+  script.
+    const datos = !{JSON.stringify(habitaciones)};
+    
+    function filtrarHabitaciones() {
+      const alaSeleccionada = document.getElementById('ala').value;
+      const selectHabitacion = document.getElementById('id_habitacion');
+      const selectCama = document.getElementById('id_cama');
+
+      selectHabitacion.innerHTML = '<option value="" disabled selected>Seleccione una habitación';
+      selectCama.innerHTML = '<option value="" disabled selected>Seleccione una cama';
+
+      datos
+        .filter(h => h.id_ala == alaSeleccionada)
+        .forEach(h => {
+          const option = document.createElement('option');
+          option.value = h.id_habitacion;
+          option.textContent = `Hab. ${h.nro_habitacion}`;
+          selectHabitacion.appendChild(option);
+        });
+    }
+
+    function filtrarCamas() {
+      const idHabitacion = document.getElementById('id_habitacion').value;
+      const selectCama = document.getElementById('id_cama');
+      selectCama.innerHTML = '<option value="" disabled selected>Seleccione una cama';
+
+      const habitacion = datos.find(h => h.id_habitacion == idHabitacion);
+      if (habitacion && habitacion.Camas) {
+        habitacion.Camas.forEach(cama => {
+          const option = document.createElement('option');
+          option.value = cama.id_cama;
+          option.textContent = `Cama ${cama.numero_cama}`;
+          selectCama.appendChild(option);
+        });
+      }
+    }

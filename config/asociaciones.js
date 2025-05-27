@@ -63,8 +63,8 @@ Internacion.belongsTo(Admision, { foreignKey: 'id_admision' });
 Internacion.belongsTo(Habitacion, { foreignKey: 'id_habitacion' });
 Habitacion.hasMany(Internacion, { foreignKey: 'id_habitacion' });
 
-Internacion.belongsTo(MotivoInternacion, { foreignKey: 'id_motivo' });
-MotivoInternacion.hasMany(Internacion, { foreignKey: 'id_motivo' });
+Internacion.belongsTo(MotivoInternacion, { foreignKey: 'id_motivo_internacion' });
+MotivoInternacion.hasMany(Internacion, { foreignKey: 'id_motivo_internacion' });
 
 // Asociación HABITACION
 Habitacion.belongsTo(Ala, { foreignKey: 'id_ala' });
@@ -82,3 +82,13 @@ Enfermero.hasMany(EvaluacionEnfermeria, { foreignKey: 'id_enfermero' });
 
 EvaluacionEnfermeria.belongsTo(CuidadosPaciente, { foreignKey: 'id_cuidados_paciente' });
 CuidadosPaciente.hasMany(EvaluacionEnfermeria, { foreignKey: 'id_cuidados_paciente' });
+
+const AsignacionCama = require("../models/AsignacionCamaModels");
+
+// Asociacion AsignacionCama
+AsignacionCama.belongsTo(Internacion, { foreignKey: "id_internacion" });
+Internacion.hasMany(AsignacionCama, { foreignKey: "id_internacion" });
+
+
+AsignacionCama.belongsTo(Cama, { foreignKey: "id_cama" });
+Cama.hasMany(AsignacionCama, { foreignKey: "id_cama" });

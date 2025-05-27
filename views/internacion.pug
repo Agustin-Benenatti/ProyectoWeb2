@@ -1,0 +1,90 @@
+extends layout
+
+block head 
+  style.
+    th, td {
+      vertical-align: middle !important;
+      text-align: center;
+    }
+
+    .table-container {
+      margin-top: 40px;
+    }
+
+    h1 {
+      
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    table.dataTable thead th {
+      background-color: #1976d2;
+      color: white;
+    }
+
+block content
+  .container.table-container
+    h1 Pacientes en Internación
+
+    link(rel='stylesheet', href='https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css')
+
+    table#tablaInternaciones.display
+      thead
+        tr
+          th Nombre
+          th Apellido
+          th DNI
+          th Habitación
+          th Cama
+          th Motivo de Internación
+          th Fecha de Ingreso
+      tbody
+        if internaciones && internaciones.length > 0
+          each internacion in internaciones
+            tr
+              td
+                if internacion.Admision && internacion.Admision.Paciente
+                  = internacion.Admision.Paciente.nombre
+                else
+                  | Desconocido
+              td
+                if internacion.Admision && internacion.Admision.Paciente
+                  = internacion.Admision.Paciente.apellido
+              td
+                if internacion.Admision && internacion.Admision.Paciente
+                  = internacion.Admision.Paciente.dni
+              td
+                if internacion.Habitacion
+                  = internacion.Habitacion.nro_habitacion
+                else
+                  | No asignada
+              td
+                if internacion.AsignacionCamas && internacion.AsignacionCamas.length > 0 && internacion.AsignacionCamas[0].Cama
+                  = internacion.AsignacionCamas[0].Cama.numero_cama
+                else
+                  | No asignada
+              td
+                if internacion.MotivoInternacion
+                  = internacion.MotivoInternacion.nombre_motivo
+                else
+                  | Sin motivo registrado
+              td
+                if internacion.fecha_ingreso
+                  = internacion.fecha_ingreso.toISOString().split('T')[0]
+        else
+          tr
+            td(colspan="7" class="text-center text-muted") No hay internaciones registradas.
+
+  // Scripts
+  script(src='https://code.jquery.com/jquery-3.6.0.min.js')
+  script(src='https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js')
+  script.
+    $(document).ready(function () {
+      $('#tablaInternaciones').DataTable({
+        responsive: true,
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        }
+      });
+    });

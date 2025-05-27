@@ -2,7 +2,9 @@ const express = require('express');
 const pug = require('pug');
 const app = express();
 const pacienteRoutes = require('./route/pacienteRoutes');
-const admisionRoutes = require('./route/admisionRoutes')
+const admisionRoutes = require('./route/admisionRoutes');
+const habitacionRoutes = require('./route/habitacionRoutes');
+const internacionRoutes = require('./route/internacionRoutes');
 
 require('./config/asociaciones');
 
@@ -31,6 +33,10 @@ app.get('/personal-enfermeria', (req, res) => {
 
     res.render('personal-enfermeria', {mainClass: ''})
 });
+
+app.use('/internacion',internacionRoutes);
+
+app.use('/habitacion',habitacionRoutes)
 
 app.listen(3000, () => {
     console.log('Servidor iniciado en el puerto 3000');

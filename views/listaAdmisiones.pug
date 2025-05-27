@@ -1,0 +1,98 @@
+extends layout
+
+block head 
+  style.
+    .btn-editar {
+      background-color: #1976d2;  
+      color: white;
+      padding: 5px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin-right: 8px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    .btn-editar:hover {
+      background-color: #115293;  
+    }
+
+    .btn-eliminar {
+      background-color: #d32f2f; 
+      color: white;
+      padding: 5px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    .btn-eliminar:hover {
+      background-color: #9a2222; 
+    }
+
+    th:last-child,
+    td:last-child {
+      text-align: center !important;
+    }
+
+    td:last-child > a {
+      margin: 0 4px;
+      display: inline-block;
+    }
+
+block content
+  .container
+    h1 Gestión de internación
+
+    if mensajeExito
+      .alert(style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; padding: 10px; margin-bottom: 20px; text-align: center;")
+        = mensajeExito
+
+    link(rel='stylesheet', href='https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css')
+
+    table#tablaPacientes.display
+      thead
+        tr
+          th Nombre
+          th Apellido
+          th DNI
+          th Obra Social
+          th Fecha de Admisión
+          th Estado
+          th Tipo de Admisión
+          th Acciones
+      tbody
+        each admision in pacientes
+          tr
+            td= admision.Paciente ? admision.Paciente.nombre : 'Paciente no asignado'
+            td= admision.Paciente ? admision.Paciente.apellido : ''
+            td= admision.Paciente ? admision.Paciente.dni : ''
+            td= (admision.Paciente && admision.Paciente.ObraSocial) ? admision.Paciente.ObraSocial.nombre : 'No tiene'
+            td= admision.fecha_admision ? admision.fecha_admision.toISOString().split('T')[0] : ''
+            td= admision.estado ? 'Admitido' : 'Rechazado'
+            td= admision.TipoAdmision ? admision.TipoAdmision.nombre : ''
+            td
+              a(href=`/internacion/generar-internacion/${admision.id_admision}`, class='btn-editar') Internar
+              a(href=`/admision/baja/${admision.id}`, class='btn-eliminar', onclick='return confirm("¿Estás seguro que querés dar de baja esta admisión?");') Dar de baja
+
+  // Scripts
+  script(src='https://code.jquery.com/jquery-3.6.0.min.js')
+  script(src='https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js')
+  script.
+    $(document).ready(function () {
+      $('#tablaPacientes').DataTable({
+        responsive: true,
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        }
+      });
+
+      // Ocultar mensaje de éxito
+      setTimeout(() => {
+        const alert = document.querySelector('.alert');
+        if (alert) {
+          alert.style.transition = 'opacity 0.5s ease-out';
+          alert.style.opacity = '0';
+          setTimeout(() => alert.remove(), 500);
+        }
+      }, 3000);
+    });

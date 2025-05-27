@@ -18,7 +18,8 @@ const mostrarPacientes = async (req, res) => {
 const mostrarFormularioCrear = async (req, res) => {
   try {
     const obrasSociales = await ObraSocial.findAll();
-    res.render('crearPaciente', { mainClass: '', obrasSociales });
+    const dni = req.query.dni || '';
+    res.render('crearPaciente', { mainClass: '', obrasSociales, dni});
   } catch (error) {
     console.error('Error al cargar obras sociales:', error);
     res.status(500).send('Error al cargar formulario');

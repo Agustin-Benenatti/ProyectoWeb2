@@ -48,15 +48,12 @@ block head
 block content
   .panel
     h1 Panel de Admisión
-
-    form(action='/pacientes/crear', method='get')
-      button(type='submit', class='boton') Cargar Paciente
-
     form(action='/admision/nueva', method='get')
       button(type='submit', class='boton') Generar Admisión
 
-    form(action='/habitaciones', method='get')
-      button(type='submit', class='boton') Consultar Habitación
+    form(action='/admision/listaAdmisiones', method='get')
+      button(type='submit', class='boton') Consultar Admisiones
 
-    form(action='/internacion', method='get')
-      button(type='submit', class='boton') Internación
+   
+
+    

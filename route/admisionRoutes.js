@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const admisionController = require('../controllers/admisionController');
 
+
 // Panel de admision
 router.get('/', admisionController.mostrarPanel);
 
@@ -13,5 +14,7 @@ router.post('/buscar-paciente', admisionController.buscarPaciente);
 
 // Crear nueva admision
 router.post('/crear', admisionController.crearAdmision);
+
+router.get('/listaAdmisiones', admisionController.mostrarPacientesAdmitidos);
 
 module.exports = router;

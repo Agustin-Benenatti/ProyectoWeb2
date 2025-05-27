@@ -1,6 +1,7 @@
 const TipoAdmision = require('../models/TipoAdmisionModels');
 const Paciente = require('../models/PacienteModels');
 const Admision = require('../models/AdmisionModels');
+const ObraSocial = require('../models/ObraSocialModels');
 
 // Mostrar panel de admisión
 const mostrarPanel = (req, res) => {
@@ -30,7 +31,8 @@ const buscarPaciente = async (req, res) => {
     if (paciente) {
       res.render('generarAdmision', { mainClass: '', paciente, tiposAdmision });
     } else {
-      res.render('generarAdmision', { mainClass: '', mensaje: 'Paciente no encontrado.', tiposAdmision });
+      const mensaje = `Paciente no encontrado. ¿Desea registrarlo?`;
+      res.render('generarAdmision', { mainClass: '', mensaje, tiposAdmision, dni });
     }
   } catch (error) {
     console.error('Error al buscar paciente:', error);
@@ -38,6 +40,7 @@ const buscarPaciente = async (req, res) => {
   }
 };
 
+//Crear admision y redirigir a la consulta de admisiones
 const crearAdmision = async (req, res) => {
   try {
     const { fecha_admision, estado, id_tipo_admision, id_paciente } = req.body;
@@ -50,10 +53,32 @@ const crearAdmision = async (req, res) => {
       id_paciente
     });
 
-    res.redirect('/admision/nueva?exito=1');
+    res.redirect('/admision/listaAdmisiones?exito=1'); 
   } catch (error) {
     console.error('Error al crear la admisión:', error);
     res.status(500).send('Error al crear la admisión');
+  }
+};
+
+const mostrarPacientesAdmitidos = async (req, res) => {
+  try {
+    const admisiones = await Admision.findAll({
+      include: [
+        {
+          model: Paciente,
+          include: [ObraSocial]
+        },
+        TipoAdmision
+      ],
+      
+    });
+
+    const mensajeExito = req.query.exito ? 'Admisión creada correctamente.' : null;
+
+    res.render('listaAdmisiones', { pacientes: admisiones, mensajeExito });
+  } catch (error) {
+    console.error('Error al obtener admisiones:', error);
+    res.status(500).send('Error al obtener admisiones');
   }
 };
 
@@ -61,5 +86,6 @@ module.exports = {
   mostrarPanel,
   mostrarFormulario,
   buscarPaciente,
-  crearAdmision
+  crearAdmision,
+  mostrarPacientesAdmitidos
 };

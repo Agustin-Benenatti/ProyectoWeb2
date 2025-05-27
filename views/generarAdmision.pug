@@ -146,7 +146,7 @@ block content
 
       else if mensaje
         .alert= mensaje
-        a.btn-success(href="/pacientes/crear") Cargar nuevo paciente
+        a.btn-success(href=`/pacientes/crear?dni=${dni}`) Cargar nuevo paciente
 
   script.
       // hace que el mensaje desaparezca

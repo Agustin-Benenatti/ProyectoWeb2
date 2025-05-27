@@ -64,9 +64,20 @@ block head
       font-size: 14px;
     }
 
+    .mensaje-error {
+      color: red;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
 block content 
   div 
     h1 Nuevo Paciente
+
+    if mensaje
+      div.mensaje-error
+        | #{mensaje}
 
     form(action="/pacientes/cargar", method="POST") 
 
@@ -88,7 +99,7 @@ block content
             option(value="Otro") Otro
         .campo
           label(for="dni") DNI: 
-          input(type="text" name="dni" placeholder='Ej: 44.123.789' required)
+          input(type="text" name="dni" placeholder='Ej: 44.123.789' required value=(dni || ''))
 
       .form-row
         .campo

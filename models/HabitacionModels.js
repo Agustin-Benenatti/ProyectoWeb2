@@ -26,10 +26,6 @@ Habitacion.init (
             type: DataTypes.INTEGER,
             allowNull: false,
         },       
-        sexo_habitacion: {
-            type: DataTypes.STRING,
-            allowNull: true,
-        },
         estado: {
             type: DataTypes.BOOLEAN,
             allowNull: false,

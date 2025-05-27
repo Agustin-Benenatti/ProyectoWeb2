@@ -11,7 +11,7 @@ MotivoInternacion.init(
             autoIncrement: true,
             primaryKey: true,
         },
-        descripcion: {
+        nombre_motivo: {
             type: DataTypes.STRING,
             allowNull: false,
         },
