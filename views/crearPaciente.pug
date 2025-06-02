@@ -84,10 +84,10 @@ block content
       .form-row
         .campo
           label(for="nombre") Nombre:
-          input(type="text" name="nombre" placeholder="Ej: Juancito" required)
+          input(type="text" name="nombre" placeholder="Ej: Juancito" required pattern="[A-Za-zÁÉÍÓÚÑáéíóúñ\s]{3,30}" title="Solo letras, entre 3 y 30 caracteres")
         .campo
           label(for="apellido") Apellido:
-          input(type="text" name="apellido" placeholder="Ej: Perez" required)
+          input(type="text" name="apellido" placeholder="Ej: Perez" required pattern="[A-Za-zÁÉÍÓÚÑáéíóúñ\s]{3,30}" title="Solo letras, entre 3 y 30 caracteres")
 
       .form-row
         .campo
@@ -104,10 +104,10 @@ block content
       .form-row
         .campo
           label(for="peso") Peso: 
-          input(type="number" name="peso" placeholder="Ej: 80kg" required min="0")
+          input(type="number" name="peso" placeholder="Ej: 80kg"  min="0")
         .campo
           label(for="altura") Altura: 
-          input(type="number" name="altura" placeholder="Ej: 1.80" required min="0" step="0.01")
+          input(type="number" name="altura" placeholder="Ej: 1.80"  min="0" step="0.001")
 
       .form-row
         .campo
@@ -128,7 +128,7 @@ block content
           input(type="text" name="direccion" placeholder="Ej: Calle falsa 123" required)
         .campo
           label(for="telefono") Teléfono: 
-          input(type="text" name="telefono" placeholder="Ej: 2664-020100")
+          input(type="text" name="telefono" placeholder="Ej: 2664-020100" required)
         .campo
           label(for="estado") Estado 
           select(name="estado" required)
@@ -137,3 +137,63 @@ block content
 
       div(style="text-align: center; margin-top: 20px;")
         button(type="submit") Guardar Paciente
+        
+        
+        // validaciones por js para el formulario de nuevo paciente
+        
+        script.
+          document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('form');
+            const nombreInput = form.querySelector('input[name="nombre"]');
+            const apellidoInput = form.querySelector('input[name="apellido"]');
+            const fechaInput = document.querySelector('input[name="fecha_nacimiento"]');
+            const telefonoInput = form.querySelector('input[name="telefono"]');
+            const dniInput = form.querySelector('input[name="dni"]');
+
+            const soloLetras = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/;
+
+            // Limitar fecha máxima al día actual
+            const hoy = new Date().toISOString().split('T')[0];
+            if (fechaInput) {
+              fechaInput.max = hoy;
+            }
+
+            form.addEventListener('submit', (e) => {
+              const nombre = nombreInput.value.trim();
+              const apellido = apellidoInput.value.trim();
+              const telefono = telefonoInput.value.trim();
+              const dni = dniInput.value.trim();
+
+              let errores = [];
+
+              if (!soloLetras.test(nombre) || nombre.length < 3 || nombre.length > 30) {
+                errores.push('El nombre debe tener entre 3 y 30 letras y no debe contener números.');
+              }
+
+              if (!soloLetras.test(apellido) || apellido.length < 3 || apellido.length > 30) {
+                errores.push('El apellido debe tener entre 3 y 30 letras y no debe contener números.');
+              }
+
+              const fechaNacimiento = new Date(fechaInput.value);
+              const hoyDate = new Date();
+              if (fechaNacimiento > hoyDate) {
+                errores.push('La fecha de nacimiento no puede ser posterior a hoy.');
+              }
+
+              const regexTelefono = /^[0-9\s\-]+$/;
+              if (telefono.length < 7 || telefono.length > 15 || !regexTelefono.test(telefono)) {
+                errores.push('El teléfono debe tener entre 7 y 15 caracteres y solo puede contener números, espacios o guiones.');
+              }
+
+              const regexDNI = /^[0-9.]+$/;
+              const dniLimpio = dni.replace(/\./g, '');
+              if (!regexDNI.test(dni) || dniLimpio.length < 7 || dniLimpio.length > 10) {
+                errores.push('El DNI debe tener entre 7 y 10 números. Puede incluir puntos como separadores.');
+              }
+
+              if (errores.length > 0) {
+                e.preventDefault(); 
+                alert(errores.join('\n'));
+              }
+            });
+          });

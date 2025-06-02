@@ -46,7 +46,7 @@ Paciente.init(
         },
         altura: {
             type: DataTypes.FLOAT,
-            allowNull: false,
+            allowNull: true,
         },
        
         fecha_nacimiento: {

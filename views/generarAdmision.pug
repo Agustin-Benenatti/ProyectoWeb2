@@ -108,6 +108,12 @@ block content
     .form-container
       h1 Nueva Admisión
 
+      if errores && errores.length
+        .alert
+          ul
+            each error in errores
+              li= error.msg
+
       if mensajeExito
         .alert(style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; padding: 10px; margin-bottom: 20px; text-align: center;")
           = mensajeExito
@@ -115,7 +121,7 @@ block content
       form(action="/admision/buscar-paciente" method="POST")
         .form-group
           label(for="dni") Buscar por DNI:
-          input#dni(type="text", name="dni", required placeholder="Ej: 30123456")
+          input#dni(type="text", name="dni", required placeholder="Ej: 30123456" title="El DNI debe tener entre 7 y 10 dígitos")
         button(type="submit") Buscar Paciente
 
       if paciente
@@ -158,3 +164,16 @@ block content
           setTimeout(() => alert.remove(), 500);
         }
       }, 3000);
+
+      const dniInput = document.getElementById('dni');
+      dniInput.addEventListener('input', () => {
+      const raw = dniInput.value;
+      const limpio = raw.replace(/\./g, '');
+
+      if (!/^[0-9.]*$/.test(raw) || limpio.length < 7 || limpio.length > 10) {
+        dniInput.setCustomValidity('El DNI debe tener entre 7 y 10 dígitos');
+      } else {
+        dniInput.setCustomValidity('');
+      }
+    });
+

@@ -2,6 +2,31 @@ extends layout
 
 block head 
   style.
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      font-weight: 700;
+    }
+
+    table.display {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px auto;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    table.display th {
+      background-color: #f0f0f0;
+      text-align: center !important;
+      padding: 10px;
+      font-weight: 600;
+    }
+
+    table.display td {
+      text-align: center;
+      padding: 8px;
+    }
+
     .btn-editar {
       background-color: #1976d2;  
       color: white;
@@ -12,6 +37,7 @@ block head
       font-weight: 600;
       transition: background-color 0.3s ease;
     }
+
     .btn-editar:hover {
       background-color: #115293;  
     }
@@ -25,6 +51,7 @@ block head
       font-weight: 600;
       transition: background-color 0.3s ease;
     }
+
     .btn-eliminar:hover {
       background-color: #9a2222; 
     }
@@ -37,6 +64,45 @@ block head
     td:last-child > a {
       margin: 0 4px;
       display: inline-block;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: white;
+      padding: 20px 30px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
 
 block content
@@ -68,11 +134,20 @@ block content
             td= admision.Paciente ? admision.Paciente.dni : ''
             td= (admision.Paciente && admision.Paciente.ObraSocial) ? admision.Paciente.ObraSocial.nombre : 'No tiene'
             td= admision.fecha_admision ? admision.fecha_admision.toISOString().split('T')[0] : ''
-            td= admision.estado ? 'Admitido' : 'Rechazado'
+            td= admision.estado ? 'Admitido' : 'Cancelado'
             td= admision.TipoAdmision ? admision.TipoAdmision.nombre : ''
             td
               a(href=`/internacion/generar-internacion/${admision.id_admision}`, class='btn-editar') Internar
-              a(href=`/admision/baja/${admision.id}`, class='btn-eliminar', onclick='return confirm("¿Estás seguro que querés dar de baja esta admisión?");') Dar de baja
+              a(href='#', class='btn-eliminar cancelar-btn', data-id=admision.id_admision) Cancelar Admisión
+
+    // Modal de confirmación
+    #confirmModal.modal
+      .modal-content
+        h2 Confirmar cancelación
+        p ¿Estás seguro que querés cancelar esta admisión?
+        .modal-actions
+          button#confirmBtn Confirmar
+          button#cancelBtn Cancelar
 
   // Scripts
   script(src='https://code.jquery.com/jquery-3.6.0.min.js')
@@ -95,4 +170,24 @@ block content
           setTimeout(() => alert.remove(), 500);
         }
       }, 3000);
+
+      // Modal de confirmación para la baja logica de la admision
+      let selectedId = null;
+
+      $('.cancelar-btn').on('click', function (e) {
+        e.preventDefault();
+        selectedId = $(this).data('id');
+        $('#confirmModal').addClass('show');
+      });
+
+      $('#confirmBtn').on('click', function () {
+        if (selectedId) {
+          window.location.href = `/admision/baja/${selectedId}`;
+        }
+      });
+
+      $('#cancelBtn').on('click', function () {
+        $('#confirmModal').removeClass('show');
+        selectedId = null;
+      });
     });

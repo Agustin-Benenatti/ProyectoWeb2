@@ -40,6 +40,8 @@ const mostrarPanelInternacion = async (req, res) => {
 const mostrarFormularioInternacion = async (req, res) => {
   try {
     const { id_admision } = req.params;
+    const id_ala = req.query.id_ala ? parseInt(req.query.id_ala) : null;
+    const nro_habitacion = req.query.nro_habitacion ? parseInt(req.query.nro_habitacion) : null;
 
     const admision = await Admision.findByPk(id_admision, {
       include: [
@@ -51,21 +53,49 @@ const mostrarFormularioInternacion = async (req, res) => {
       ]
     });
 
+    if (!admision || !admision.Paciente) {
+      return res.status(404).send('Admisión o paciente no encontrado');
+    }
+
+    const sexoPacienteActual = admision.Paciente.sexo;
+
+    let habitacionWhere = { estado: true };
+    if (id_ala) habitacionWhere.id_ala = id_ala;
+    if (nro_habitacion) habitacionWhere.nro_habitacion = nro_habitacion;
+
     const habitaciones = await Habitacion.findAll({
-      attributes: ['id_habitacion', 'nro_habitacion', 'id_ala'],
       include: [
         {
+          model: Cama,
+          as: 'Camas',
+          where: { estado: true },
+          required: true,
+          attributes: ['id_cama', 'numero_cama', 'estado']
+        },
+        {
           model: Ala,
+          as: 'Ala',
           attributes: ['id_ala', 'nombre_ala']
         },
         {
-          model: Cama,
-          where: { estado: true },
+          model: Internacion,
           required: false,
-          attributes: ['id_cama', 'numero_cama', 'estado']
+          where: { estado: true },
+          include: [{
+            model: Admision,
+            include: [{
+              model: Paciente,
+              attributes: ['sexo']
+            }]
+          }]
         }
       ],
-      order: [['id_ala', 'ASC'], ['nro_habitacion', 'ASC']]
+      where: habitacionWhere,
+      order: [
+        [{ model: Ala, as: 'Ala' }, 'nombre_ala', 'ASC'],
+        ['nro_habitacion', 'ASC']
+      ],
+      distinct: true,
     });
 
     const motivos = await MotivoInternacion.findAll({
@@ -82,7 +112,9 @@ const mostrarFormularioInternacion = async (req, res) => {
       habitaciones,
       motivos,
       alas,
-      mainClass: ''
+      sexoPacienteActual,
+      mainClass: '',
+      error: null
     });
 
   } catch (error) {
@@ -90,6 +122,7 @@ const mostrarFormularioInternacion = async (req, res) => {
     res.status(500).send('Error al cargar el formulario de internación');
   }
 };
+
 
 const crearInternacion = async (req, res) => {
   try {
@@ -102,6 +135,82 @@ const crearInternacion = async (req, res) => {
       id_cama
     } = req.body;
 
+    // Obtener el sexo del paciente a internar
+    const admision = await Admision.findByPk(id_admision, {
+      include: [{ model: Paciente }]
+    });
+    const sexoPaciente = admision.Paciente.sexo;
+
+    // Obtener sexos de pacientes ya internados en esa habitación
+    const internaciones = await Internacion.findAll({
+      where: { id_habitacion, estado: true },
+      include: [{
+        model: Admision,
+        include: [{ model: Paciente, attributes: ['sexo'] }]
+      }]
+    });
+
+    const sexosEnHabitacion = internaciones.map(i => i.Admision.Paciente.sexo);
+
+    if (sexosEnHabitacion.length > 0 && !sexosEnHabitacion.every(s => s === sexoPaciente)) {
+      // Obtener datos para recargar el formulario con error
+      const admision = await Admision.findByPk(id_admision, {
+        include: [
+          {
+            model: Paciente,
+            include: [ObraSocial]
+          },
+          TipoAdmision
+        ]
+      });
+
+      const sexoPacienteActual = admision.Paciente.sexo;
+
+      // Traer habitaciones con camas disponibles
+      const habitaciones = await Habitacion.findAll({
+        include: [
+          {
+            model: Cama,
+            as: 'Camas',
+            where: { estado: true }, // solo camas disponibles
+            required: true,
+            attributes: ['id_cama', 'numero_cama', 'estado']
+          },
+          {
+            model: Ala,
+            as: 'Ala',
+            attributes: ['id_ala', 'nombre_ala']
+          }
+        ],
+        where: { estado: true }, // habitaciones activas
+        order: [
+          [{ model: Ala, as: 'Ala' }, 'nombre_ala', 'ASC'],
+          ['nro_habitacion', 'ASC']
+        ],
+        distinct: true,
+      });
+
+      const motivos = await MotivoInternacion.findAll({
+        attributes: ['id_motivo_internacion', 'nombre_motivo']
+      });
+
+      const alas = await Ala.findAll({
+        attributes: ['id_ala', 'nombre_ala'],
+        order: [['nombre_ala', 'ASC']]
+      });
+
+      return res.status(400).render('generarInternacion', {
+        admision,
+        habitaciones,
+        motivos,
+        alas,
+        sexoPacienteActual,
+        mainClass: '',
+        error: `No se puede internar paciente de sexo diferente en la habitación nro ${id_habitacion}.`
+      });
+    }
+
+    // Si pasa la validación, se genera la internacion
     const nuevaInternacion = await Internacion.create({
       id_admision,
       id_habitacion,
@@ -110,6 +219,7 @@ const crearInternacion = async (req, res) => {
       estado: estado === 'true'
     });
 
+    // Asignar cama y actualizar estado cama
     await AsignacionCama.create({
       id_internacion: nuevaInternacion.id_internacion,
       id_cama
@@ -146,7 +256,7 @@ const mostrarListaInternacion = async (req, res) => {
         },
         {
           model: MotivoInternacion,
-          attributes: ['nombre_motivo'] // atributo correcto
+          attributes: ['nombre_motivo'] 
         },
         {
           model: AsignacionCama,

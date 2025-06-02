@@ -35,6 +35,22 @@ const crearPaciente = async (req, res) => {
       data.id_obra_social = null;
     }
 
+    // Manejar peso (opcional)
+    if (data.peso && data.peso.trim() !== '') {
+      data.peso = parseFloat(data.peso.replace(',', '.'));
+      if (isNaN(data.peso)) throw new Error('Peso inválido');
+    } else {
+      data.peso = null;
+    }
+
+    // Manejar altura (opcional)
+    if (data.altura && data.altura.trim() !== '') {
+      data.altura = parseFloat(data.altura.replace(',', '.'));
+      if (isNaN(data.altura)) throw new Error('Altura inválida');
+    } else {
+      data.altura = null;
+    }
+
     await Paciente.create(data);
     res.redirect('/pacientes');
   } catch (error) {
@@ -67,6 +83,22 @@ const editarPaciente = async (req, res) => {
     const data = req.body;
     if (!data.id_obra_social || data.id_obra_social === '') {
       data.id_obra_social = null;
+    }
+
+        // Manejar peso (opcional)
+    if (data.peso && data.peso.trim() !== '') {
+      data.peso = parseFloat(data.peso.replace(',', '.'));
+      if (isNaN(data.peso)) throw new Error('Peso inválido');
+    } else {
+      data.peso = null;
+    }
+
+    // Manejar altura (opcional)
+    if (data.altura && data.altura.trim() !== '') {
+      data.altura = parseFloat(data.altura.replace(',', '.'));
+      if (isNaN(data.altura)) throw new Error('Altura inválida');
+    } else {
+      data.altura = null;
     }
 
     await paciente.update(data);

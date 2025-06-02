@@ -60,9 +60,11 @@ const crearAdmision = async (req, res) => {
   }
 };
 
+// Muestro mi lista de pacientes con estado de admision "ADMITIDO"
 const mostrarPacientesAdmitidos = async (req, res) => {
   try {
     const admisiones = await Admision.findAll({
+      where:{estado: true},
       include: [
         {
           model: Paciente,
@@ -82,10 +84,29 @@ const mostrarPacientesAdmitidos = async (req, res) => {
   }
 };
 
+// Hago la baja logica de una admision, le cambio el estado a "CANCELADO" y se me elimina de la 
+// lista de pacientes "ADMITIDOS"
+const darDeBajaAdmision = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await Admision.update(
+      { estado: false },
+      { where: { id_admision: id } }
+    );
+
+    res.redirect('/admision/listaAdmisiones');
+  } catch (error) {
+    console.error('Error al dar de baja la admisión:', error);
+    res.status(500).send('Error al dar de baja la admisión');
+  }
+};
+
 module.exports = {
   mostrarPanel,
   mostrarFormulario,
   buscarPaciente,
   crearAdmision,
-  mostrarPacientesAdmitidos
+  mostrarPacientesAdmitidos,
+  darDeBajaAdmision
 };

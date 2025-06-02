@@ -67,11 +67,11 @@ Internacion.belongsTo(MotivoInternacion, { foreignKey: 'id_motivo_internacion' }
 MotivoInternacion.hasMany(Internacion, { foreignKey: 'id_motivo_internacion' });
 
 // Asociación HABITACION
-Habitacion.belongsTo(Ala, { foreignKey: 'id_ala' });
-Ala.hasMany(Habitacion, { foreignKey: 'id_ala' });
+Habitacion.belongsTo(Ala, { foreignKey: 'id_ala', as: "Ala"});
+Ala.hasMany(Habitacion, { foreignKey: 'id_ala', as:"Habitaciones" });
 
-Habitacion.hasMany(Cama, { foreignKey: 'id_habitacion' });
-Cama.belongsTo(Habitacion, { foreignKey: 'id_habitacion' });
+Habitacion.hasMany(Cama, { foreignKey: 'id_habitacion' ,as: "Camas" });
+Cama.belongsTo(Habitacion, { foreignKey: 'id_habitacion', as: "Habitacion" });
 
 // Asociación ENFERMERIA
 Internacion.hasMany(EvaluacionEnfermeria, { foreignKey: 'id_internacion' });
