@@ -20,6 +20,6 @@ router.get('/editar/:id', pacienteController.mostrarFormularioEditar);
 router.post('/editar/:id', pacienteValidation(), validarResultados('modificarPaciente'), pacienteController.editarPaciente);
 
 // Ruta para baja logica del paciente
-router.get('/baja/:id', pacienteController.bajaLogica);
+router.post('/baja/:id', pacienteController.bajaLogica);
 
 module.exports = router;

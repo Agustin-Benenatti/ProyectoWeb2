@@ -3,36 +3,38 @@ extends layout
 block head 
   style.
     .btn-editar {
-    background-color: #1976d2;  
-    color: white;
-    padding: 5px 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    margin-right: 8px;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
+      background-color: #1976d2;  
+      color: white;
+      padding: 5px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin-right: 8px;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
     }
+
     .btn-editar:hover {
-    background-color: #115293;  
+      background-color: #115293;  
     }
 
     .btn-eliminar {
-    background-color: #d32f2f; 
-    color: white;
-    padding: 5px 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background-color 0.3s ease;
+      background-color: #d32f2f; 
+      color: white;
+      padding: 5px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
     }
+
     .btn-eliminar:hover {
-    background-color: #9a2222; 
+      background-color: #9a2222; 
     }
+
     th:last-child {
       text-align: center !important;
     }
 
-    
     td:last-child {
       text-align: center;
     }
@@ -42,13 +44,60 @@ block head
       display: inline-block;
     }
 
+    #customModal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
 
+    #customModal .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    #customModal h2 {
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    #customModal p {
+      font-size: 16px;
+    }
+
+    #customModal button {
+      margin: 5px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+
+    #customModal button:hover {
+      background-color: #0056b3;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
 
 block content
   h1 Gestión de pacientes
-  
 
-  
   link(rel='stylesheet', href='https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css')
 
   table#tablaPacientes.display
@@ -65,7 +114,6 @@ block content
         th Estado
         th Acciones
         
-        
     tbody
       each paciente in pacientes
         tr
@@ -80,10 +128,18 @@ block content
           td= paciente.estado ? 'Activo' : 'Inactivo'
           td 
             a(href=`/pacientes/editar/${paciente.id_paciente}`, class='btn-editar') Modificar
-            a(href=`/pacientes/baja/${paciente.id_paciente}`, class='btn-eliminar', onclick='return confirm("¿Estás seguro que querés dar de baja a este paciente?");')= paciente.estado ? 'Baja' : 'Activar'
-          
+            a(href="#", class='btn-eliminar', data-url=`/pacientes/baja/${paciente.id_paciente}`, onclick='abrirModal(this)')= paciente.estado ? 'Baja' : 'Activar'
 
-  // Scripts: fuera del tbody
+  // Modal personalizado
+  #customModal
+    .modal-content
+      h2 Confirmación
+      p ¿Estás seguro que querés cambiar el estado del paciente?
+      form#modalForm(method="POST")
+        button(type="submit") Confirmar
+        button(type="button" onclick="cerrarModal()") Cancelar
+
+  // Scripts
   script(src='https://code.jquery.com/jquery-3.6.0.min.js')
   script(src='https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js')
   script.
@@ -93,5 +149,22 @@ block content
         language: {
           url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
         }
+      });
+    });
+
+    function abrirModal(elemento) {
+      const url = elemento.getAttribute('data-url');
+      const form = document.getElementById('modalForm');
+      form.setAttribute('action', url);
+      document.getElementById('customModal').style.display = 'flex';
+    }
+
+    function cerrarModal() {
+      document.getElementById('customModal').style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('customModal').addEventListener('click', function (e) {
+        if (e.target === this) cerrarModal();
       });
     });

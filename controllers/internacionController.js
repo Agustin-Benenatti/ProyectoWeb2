@@ -59,6 +59,13 @@ const mostrarFormularioInternacion = async (req, res) => {
 
     const sexoPacienteActual = admision.Paciente.sexo;
 
+    const internacionActiva = await Internacion.findOne({
+      where: {
+        id_admision,
+        estado: true
+      }
+    });
+
     let habitacionWhere = { estado: true };
     if (id_ala) habitacionWhere.id_ala = id_ala;
     if (nro_habitacion) habitacionWhere.nro_habitacion = nro_habitacion;
@@ -68,9 +75,12 @@ const mostrarFormularioInternacion = async (req, res) => {
         {
           model: Cama,
           as: 'Camas',
-          where: { estado: true },
+          where: 
+          { estado: true, 
+            higiene: true
+          },
           required: true,
-          attributes: ['id_cama', 'numero_cama', 'estado']
+          attributes: ['id_cama', 'numero_cama', 'estado', 'higiene']
         },
         {
           model: Ala,
@@ -108,21 +118,22 @@ const mostrarFormularioInternacion = async (req, res) => {
     });
 
     res.render('generarInternacion', {
-      admision,
-      habitaciones,
-      motivos,
-      alas,
-      sexoPacienteActual,
-      mainClass: '',
-      error: null
-    });
+    admision,
+    habitaciones,
+    motivos,
+    alas,
+    sexoPacienteActual,
+    mainClass: '',
+    error: null,
+    internacionActiva: !!internacionActiva,
+    yaInternado: !!internacionActiva  
+  });
 
   } catch (error) {
     console.error('Error al mostrar el formulario de internación:', error);
     res.status(500).send('Error al cargar el formulario de internación');
   }
 };
-
 
 const crearInternacion = async (req, res) => {
   try {
@@ -135,44 +146,36 @@ const crearInternacion = async (req, res) => {
       id_cama
     } = req.body;
 
-    // Obtener el sexo del paciente a internar
     const admision = await Admision.findByPk(id_admision, {
-      include: [{ model: Paciente }]
+      include: [
+        {
+          model: Paciente,
+          include: [ObraSocial]
+        },
+        TipoAdmision
+      ]
     });
+
+    if (!admision || !admision.Paciente) {
+      return res.status(404).send('Admisión o paciente no encontrada');
+    }
+
     const sexoPaciente = admision.Paciente.sexo;
 
-    // Obtener sexos de pacientes ya internados en esa habitación
-    const internaciones = await Internacion.findAll({
-      where: { id_habitacion, estado: true },
-      include: [{
-        model: Admision,
-        include: [{ model: Paciente, attributes: ['sexo'] }]
-      }]
+    const yaInternado = await Internacion.findOne({
+      where: {
+        id_admision,
+        estado: true
+      }
     });
 
-    const sexosEnHabitacion = internaciones.map(i => i.Admision.Paciente.sexo);
-
-    if (sexosEnHabitacion.length > 0 && !sexosEnHabitacion.every(s => s === sexoPaciente)) {
-      // Obtener datos para recargar el formulario con error
-      const admision = await Admision.findByPk(id_admision, {
-        include: [
-          {
-            model: Paciente,
-            include: [ObraSocial]
-          },
-          TipoAdmision
-        ]
-      });
-
-      const sexoPacienteActual = admision.Paciente.sexo;
-
-      // Traer habitaciones con camas disponibles
+    if (yaInternado) {
       const habitaciones = await Habitacion.findAll({
         include: [
           {
             model: Cama,
             as: 'Camas',
-            where: { estado: true }, // solo camas disponibles
+            where: { estado: true },
             required: true,
             attributes: ['id_cama', 'numero_cama', 'estado']
           },
@@ -182,7 +185,7 @@ const crearInternacion = async (req, res) => {
             attributes: ['id_ala', 'nombre_ala']
           }
         ],
-        where: { estado: true }, // habitaciones activas
+        where: { estado: true },
         order: [
           [{ model: Ala, as: 'Ala' }, 'nombre_ala', 'ASC'],
           ['nro_habitacion', 'ASC']
@@ -204,13 +207,68 @@ const crearInternacion = async (req, res) => {
         habitaciones,
         motivos,
         alas,
-        sexoPacienteActual,
+        sexoPacienteActual: sexoPaciente,
         mainClass: '',
-        error: `No se puede internar paciente de sexo diferente en la habitación nro ${id_habitacion}.`
+        error: 'Este paciente ya tiene una internación activa.',
+        internacionActiva: true
       });
     }
 
-    // Si pasa la validación, se genera la internacion
+    const internaciones = await Internacion.findAll({
+      where: { id_habitacion, estado: true },
+      include: [{
+        model: Admision,
+        include: [{ model: Paciente, attributes: ['sexo'] }]
+      }]
+    });
+
+    const sexosEnHabitacion = internaciones.map(i => i.Admision.Paciente.sexo);
+
+    if (sexosEnHabitacion.length > 0 && !sexosEnHabitacion.every(s => s === sexoPaciente)) {
+      const habitaciones = await Habitacion.findAll({
+        include: [
+          {
+            model: Cama,
+            as: 'Camas',
+            where: { estado: true },
+            required: true,
+            attributes: ['id_cama', 'numero_cama', 'estado']
+          },
+          {
+            model: Ala,
+            as: 'Ala',
+            attributes: ['id_ala', 'nombre_ala']
+          }
+        ],
+        where: { estado: true },
+        order: [
+          [{ model: Ala, as: 'Ala' }, 'nombre_ala', 'ASC'],
+          ['nro_habitacion', 'ASC']
+        ],
+        distinct: true,
+      });
+
+      const motivos = await MotivoInternacion.findAll({
+        attributes: ['id_motivo_internacion', 'nombre_motivo']
+      });
+
+      const alas = await Ala.findAll({
+        attributes: ['id_ala', 'nombre_ala'],
+        order: [['nombre_ala', 'ASC']]
+      });
+
+      return res.status(400).render('generarInternacion', {
+        admision,
+        habitaciones,
+        motivos,
+        alas,
+        sexoPacienteActual: sexoPaciente,
+        mainClass: '',
+        error: `No se puede internar un paciente de sexo diferente en la habitación nro ${id_habitacion}.`,
+        internacionActiva: false
+      });
+    }
+
     const nuevaInternacion = await Internacion.create({
       id_admision,
       id_habitacion,
@@ -219,7 +277,6 @@ const crearInternacion = async (req, res) => {
       estado: estado === 'true'
     });
 
-    // Asignar cama y actualizar estado cama
     await AsignacionCama.create({
       id_internacion: nuevaInternacion.id_internacion,
       id_cama
@@ -256,7 +313,7 @@ const mostrarListaInternacion = async (req, res) => {
         },
         {
           model: MotivoInternacion,
-          attributes: ['nombre_motivo'] 
+          attributes: ['nombre_motivo']
         },
         {
           model: AsignacionCama,
@@ -278,7 +335,6 @@ const mostrarListaInternacion = async (req, res) => {
 
   } catch (error) {
     console.error('Error al cargar la lista de internaciones:', error.message);
-    console.error(error);
     res.status(500).send('Error al cargar las internaciones');
   }
 };

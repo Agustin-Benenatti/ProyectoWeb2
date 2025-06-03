@@ -30,6 +30,11 @@ Cama.init (
             allowNull: false,
             defaultValue: true,
         },
+        higiene: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: true,
+        },
     },
     {
         sequelize,

@@ -8,10 +8,12 @@ const obtenerHabitaciones = async (req, res) => {
             include: [
                 {
                     model: Ala,
+                    as: 'Ala',
                     attributes: ['nombre_ala'] 
                 },
                 {
                     model: Cama,
+                    as: 'Camas',
                     attributes: ['id_cama', 'estado']
                 }
             ],

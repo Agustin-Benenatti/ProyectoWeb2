@@ -140,11 +140,7 @@ block content
         .campo
           label(for="telefono") Teléfono: 
           input(type="text" name="telefono" placeholder="Ej: 2664-020100" required value=p.telefono)
-        .campo
-          label(for="estado") Estado 
-          select(name="estado" required)
-            option(value="true" selected=p.estado===true) Activo 
-            option(value="false" selected=p.estado===false) Inactivo
+        
 
       div(style="text-align: center; margin-top: 20px;")
         button(type="submit") Actualizar Paciente

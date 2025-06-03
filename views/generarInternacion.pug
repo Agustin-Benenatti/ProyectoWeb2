@@ -79,7 +79,6 @@ block head
       background-color: #5a6268;
     }
 
-    /* Modal personalizado */
     #customModal {
       display: none;
       position: fixed;
@@ -108,6 +107,10 @@ block head
       font-size: 20px;
     }
 
+    #customModal p {
+      font-size: 16px;
+    }
+
     #customModal button {
       margin-top: 15px;
       padding: 8px 16px;
@@ -131,9 +134,6 @@ block content
   .container
     h1 Nueva Internación para #{admision.Paciente.nombre} #{admision.Paciente.apellido}
 
-    if error
-      .alert.alert-danger #{error}
-
     form(action="/internacion/crear" method="POST")
       input(type="hidden" name="id_admision" value=admision.id_admision)
 
@@ -152,48 +152,36 @@ block content
 
       .form-group
         label(for="ala") Ala
-        select#ala.form-control(name="ala" onchange="filtrarHabitaciones()" class=(error ? 'is-invalid' : ''))
+        select#ala.form-control(name="ala" onchange="filtrarHabitaciones()")
           option(value="" disabled selected) Seleccione un ala
           each ala in alas
-            option(
-              value=ala.id_ala,
-              selected=(typeof alaSeleccionada !== 'undefined' && ala.id_ala == alaSeleccionada) ? true : undefined
-            ) #{ala.nombre_ala}
-        if error
-          .invalid-feedback Por favor seleccione un ala válida.
+            option(value=ala.id_ala selected=(ala.id_ala == alaSeleccionada)) #{ala.nombre_ala}
 
       .form-group
         label(for="id_habitacion") Habitación
-        select#id_habitacion.form-control(name="id_habitacion" required onchange="filtrarCamas()" class=(error ? 'is-invalid' : ''))
+        select#id_habitacion.form-control(name="id_habitacion" onchange="filtrarCamas()")
           option(value="" disabled selected) Seleccione una habitación
-        if error
-          .invalid-feedback Por favor seleccione una habitación.
 
       .form-group
         label(for="id_cama") Cama
-        select#id_cama.form-control(name="id_cama" required class=(error ? 'is-invalid' : ''))
+        select#id_cama.form-control(name="id_cama")
           option(value="" disabled selected) Seleccione una cama
-        if error
-          .invalid-feedback Por favor seleccione una cama.
 
       .form-group
         label(for="id_motivo_internacion") Motivo de Internación
-        select#id_motivo_internacion.form-control(name="id_motivo_internacion" required)
+        select#id_motivo_internacion.form-control(name="id_motivo_internacion")
           option(value="" disabled selected) Seleccione un motivo
           each motivo in motivos
-            option(
-              value=motivo.id_motivo_internacion,
-              selected=(typeof motivoSeleccionado !== 'undefined' && motivo.id_motivo_internacion == motivoSeleccionado) ? true : undefined
-            ) #{motivo.nombre_motivo}
+            option(value=motivo.id_motivo_internacion selected=(motivo.id_motivo_internacion == motivoSeleccionado)) #{motivo.nombre_motivo}
 
       .form-group
         label(for="fecha_ingreso") Fecha de Ingreso
         - var fechaHoy = new Date().toISOString().split('T')[0]
-        input#fecha_ingreso.form-control(type="date" name="fecha_ingreso" required value=fechaHoy)
+        input#fecha_ingreso.form-control(type="date" name="fecha_ingreso" value=fechaHoy)
 
       input(type="hidden" name="estado" value="true")
 
-      button.btn.btn-primary(type="submit") Confirmar Internación
+      button#btnConfirmar.btn.btn-primary(type="submit" disabled=yaInternado ? true : false) Confirmar Internación
       a.btn.btn-secondary(href="/internacion") Cancelar
 
     // Modal personalizado
@@ -206,10 +194,10 @@ block content
   script.
     const datos = !{JSON.stringify(habitaciones || [])};
     const sexoPacienteActual = "#{sexoPacienteActual || ''}";
-
     const alaSeleccionada = "#{alaSeleccionada || ''}";
     const habitacionSeleccionada = "#{habitacionSeleccionada || ''}";
     const camaSeleccionada = "#{camaSeleccionada || ''}";
+    const pacienteYaInternado = !{JSON.stringify(yaInternado || false)};
 
     function filtrarHabitaciones() {
       const alaValue = document.getElementById('ala').value;
@@ -237,7 +225,7 @@ block content
         filtrarCamas();
       }
     }
-
+    // filtro para mostrar las camas con estado true y higiene true 
     function filtrarCamas() {
       const idHabitacion = document.getElementById('id_habitacion').value;
       const selectCama = document.getElementById('id_cama');
@@ -260,10 +248,10 @@ block content
         document.getElementById('customModal').style.display = 'flex';
         return;
       }
-
+      // valida que el estado de la cama y la higiene sea true
       if (habitacion && Array.isArray(habitacion.Camas)) {
         habitacion.Camas
-          .filter(cama => cama.estado === true)
+          .filter(cama => cama.estado === true && cama.higiene === true)
           .forEach(cama => {
             const option = document.createElement('option');
             option.value = cama.id_cama;
@@ -283,4 +271,13 @@ block content
     window.addEventListener('DOMContentLoaded', () => {
       if (alaSeleccionada) filtrarHabitaciones();
       if (habitacionSeleccionada) filtrarCamas();
+
+      if (pacienteYaInternado) {
+        document.getElementById('mensajeModal').textContent =
+          "Este paciente ya tiene una internación activa. No se puede registrar otra.";
+        document.getElementById('customModal').style.display = 'flex';
+
+        const btn = document.getElementById('btnConfirmar');
+        if (btn) btn.disabled = true;
+      }
     });
