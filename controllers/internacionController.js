@@ -146,30 +146,17 @@ const crearInternacion = async (req, res) => {
       id_cama
     } = req.body;
 
-    const admision = await Admision.findByPk(id_admision, {
-      include: [
-        {
-          model: Paciente,
-          include: [ObraSocial]
-        },
-        TipoAdmision
-      ]
-    });
+    if (!id_admision || !id_habitacion || !id_motivo_internacion || !fecha_ingreso || !id_cama) {
+      const admision = await Admision.findByPk(id_admision, {
+        include: [
+          {
+            model: Paciente,
+            include: [ObraSocial]
+          },
+          TipoAdmision
+        ]
+      });
 
-    if (!admision || !admision.Paciente) {
-      return res.status(404).send('Admisión o paciente no encontrada');
-    }
-
-    const sexoPaciente = admision.Paciente.sexo;
-
-    const yaInternado = await Internacion.findOne({
-      where: {
-        id_admision,
-        estado: true
-      }
-    });
-
-    if (yaInternado) {
       const habitaciones = await Habitacion.findAll({
         include: [
           {
@@ -207,92 +194,95 @@ const crearInternacion = async (req, res) => {
         habitaciones,
         motivos,
         alas,
-        sexoPacienteActual: sexoPaciente,
+        sexoPacienteActual: admision.Paciente.sexo,
         mainClass: '',
-        error: 'Este paciente ya tiene una internación activa.',
-        internacionActiva: true
-      });
-    }
-
-    const internaciones = await Internacion.findAll({
-      where: { id_habitacion, estado: true },
-      include: [{
-        model: Admision,
-        include: [{ model: Paciente, attributes: ['sexo'] }]
-      }]
-    });
-
-    const sexosEnHabitacion = internaciones.map(i => i.Admision.Paciente.sexo);
-
-    if (sexosEnHabitacion.length > 0 && !sexosEnHabitacion.every(s => s === sexoPaciente)) {
-      const habitaciones = await Habitacion.findAll({
-        include: [
-          {
-            model: Cama,
-            as: 'Camas',
-            where: { estado: true },
-            required: true,
-            attributes: ['id_cama', 'numero_cama', 'estado']
-          },
-          {
-            model: Ala,
-            as: 'Ala',
-            attributes: ['id_ala', 'nombre_ala']
-          }
-        ],
-        where: { estado: true },
-        order: [
-          [{ model: Ala, as: 'Ala' }, 'nombre_ala', 'ASC'],
-          ['nro_habitacion', 'ASC']
-        ],
-        distinct: true,
-      });
-
-      const motivos = await MotivoInternacion.findAll({
-        attributes: ['id_motivo_internacion', 'nombre_motivo']
-      });
-
-      const alas = await Ala.findAll({
-        attributes: ['id_ala', 'nombre_ala'],
-        order: [['nombre_ala', 'ASC']]
-      });
-
-      return res.status(400).render('generarInternacion', {
-        admision,
-        habitaciones,
-        motivos,
-        alas,
-        sexoPacienteActual: sexoPaciente,
-        mainClass: '',
-        error: `No se puede internar un paciente de sexo diferente en la habitación nro ${id_habitacion}.`,
+        error: 'Todos los campos son obligatorios.',
         internacionActiva: false
       });
     }
 
-    const nuevaInternacion = await Internacion.create({
+    // Validación: la fecha de ingreso no puede ser posterior a la actual
+    const fechaIngresada = new Date(fecha_ingreso);
+    const fechaActual = new Date();
+    fechaIngresada.setHours(0, 0, 0, 0);
+    fechaActual.setHours(0, 0, 0, 0);
+
+    if (fechaIngresada > fechaActual) {
+      const admision = await Admision.findByPk(id_admision, {
+        include: [
+          {
+            model: Paciente,
+            include: [ObraSocial]
+          },
+          TipoAdmision
+        ]
+      });
+
+      const habitaciones = await Habitacion.findAll({
+        include: [
+          {
+            model: Cama,
+            as: 'Camas',
+            where: { estado: true },
+            required: true,
+            attributes: ['id_cama', 'numero_cama', 'estado']
+          },
+          {
+            model: Ala,
+            as: 'Ala',
+            attributes: ['id_ala', 'nombre_ala']
+          }
+        ],
+        where: { estado: true },
+        order: [
+          [{ model: Ala, as: 'Ala' }, 'nombre_ala', 'ASC'],
+          ['nro_habitacion', 'ASC']
+        ],
+        distinct: true,
+      });
+
+      const motivos = await MotivoInternacion.findAll({
+        attributes: ['id_motivo_internacion', 'nombre_motivo']
+      });
+
+      const alas = await Ala.findAll({
+        attributes: ['id_ala', 'nombre_ala'],
+        order: [['nombre_ala', 'ASC']]
+      });
+
+      return res.status(400).render('generarInternacion', {
+        admision,
+        habitaciones,
+        motivos,
+        alas,
+        sexoPacienteActual: admision.Paciente.sexo,
+        mainClass: '',
+        error: 'La fecha de ingreso no puede ser posterior a la fecha actual.',
+        internacionActiva: false
+      });
+    }
+
+    await Internacion.create({
       id_admision,
       id_habitacion,
       id_motivo_internacion,
       fecha_ingreso,
-      estado: estado === 'true'
-    });
-
-    await AsignacionCama.create({
-      id_internacion: nuevaInternacion.id_internacion,
+      estado,
       id_cama
     });
 
     await Cama.update(
       { estado: false },
-      { where: { id_cama } }
+      { where: { id_cama: id_cama } }
     );
 
-    res.redirect('/internacion?mensajeExito=Internación y cama asignadas con éxito');
+    res.redirect('/internaciones');
   } catch (error) {
-    console.error('Error al crear internación:', error);
-    res.status(500).send('Error al registrar la internación');
+    console.error('Error al crear la internación:', error);
+    res.status(500).send('Error interno del servidor');
   }
 };
+
 
 const mostrarListaInternacion = async (req, res) => {
   try {

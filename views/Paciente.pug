@@ -136,6 +136,7 @@ block content
       h2 Confirmación
       p ¿Estás seguro que querés cambiar el estado del paciente?
       form#modalForm(method="POST")
+        input(type="hidden" name="_method" value="PUT")
         button(type="submit") Confirmar
         button(type="button" onclick="cerrarModal()") Cancelar
 

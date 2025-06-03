@@ -83,7 +83,10 @@ block content
           each error in errores
             li= error.msg
 
-    form(action=`/pacientes/editar/${p.id_paciente}`, method="POST") 
+    form(action=`/pacientes/editar/${p.id_paciente}`, method="POST")
+      
+      // Input oculto para method-override PUT
+      input(type="hidden" name="_method" value="PUT")
 
       .form-row
         .campo
@@ -184,21 +187,20 @@ block content
             errores.push('La fecha de nacimiento no puede ser posterior a hoy.');
           }
 
-          const regexTelefono = /^[0-9\\s\\-]+$/;
+          const regexTelefono = /^[0-9\s\-]+$/;
           if (telefono.length < 7 || telefono.length > 15 || !regexTelefono.test(telefono)) {
             errores.push('El teléfono debe tener entre 7 y 15 caracteres y solo puede contener números, espacios o guiones.');
           }
 
           const regexDNI = /^[0-9.]+$/;
-          const dniLimpio = dni.replace(/\\./g, '');
+          const dniLimpio = dni.replace(/\./g, '');
           if (!regexDNI.test(dni) || dniLimpio.length < 7 || dniLimpio.length > 10) {
             errores.push('El DNI debe tener entre 7 y 10 números. Puede incluir puntos como separadores.');
           }
 
           if (errores.length > 0) {
             e.preventDefault();
-            alert(errores.join('\\n'));
+            alert(errores.join('\n'));
           }
         });
       });
-

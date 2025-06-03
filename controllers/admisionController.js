@@ -46,6 +46,33 @@ const crearAdmision = async (req, res) => {
     const { fecha_admision, estado, id_tipo_admision, id_paciente } = req.body;
     const estadoBooleano = estado === '1';
 
+    // Validar que la fecha sea válida
+    const fechaAdmisionDate = new Date(fecha_admision);
+    if (isNaN(fechaAdmisionDate)) {
+      const tiposAdmision = await TipoAdmision.findAll();
+      return res.status(400).render('generarAdmision', {
+        mainClass: '',
+        paciente: { id_paciente },
+        tiposAdmision,
+        errores: [{ msg: 'La fecha de admisión no es válida.' }]
+      });
+    }
+
+    // Validar que la fecha no sea anterior a hoy
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0); // Ignorar horas para comparar solo fecha
+
+    if (fechaAdmisionDate < hoy) {
+      const tiposAdmision = await TipoAdmision.findAll();
+      return res.status(400).render('generarAdmision', {
+        mainClass: '',
+        paciente: { id_paciente },
+        tiposAdmision,
+        errores: [{ msg: 'La fecha de admisión no puede ser anterior a hoy.' }]
+      });
+    }
+
+    // Crear la admisión
     await Admision.create({
       fecha_admision,
       estado: estadoBooleano,
@@ -59,6 +86,8 @@ const crearAdmision = async (req, res) => {
     res.status(500).send('Error al crear la admisión');
   }
 };
+
+
 
 // Muestro mi lista de pacientes con estado de admision "ADMITIDO"
 const mostrarPacientesAdmitidos = async (req, res) => {

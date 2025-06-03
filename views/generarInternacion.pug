@@ -177,7 +177,7 @@ block content
       .form-group
         label(for="fecha_ingreso") Fecha de Ingreso
         - var fechaHoy = new Date().toISOString().split('T')[0]
-        input#fecha_ingreso.form-control(type="date" name="fecha_ingreso" value=fechaHoy)
+        input#fecha_ingreso.form-control(type="date" name="fecha_ingreso" value=fechaHoy readonly)
 
       input(type="hidden" name="estado" value="true")
 
@@ -279,5 +279,11 @@ block content
 
         const btn = document.getElementById('btnConfirmar');
         if (btn) btn.disabled = true;
+      }
+
+      const inputFecha = document.getElementById('fecha_ingreso');
+      if (inputFecha) {
+        const hoy = new Date().toISOString().split('T')[0];
+        inputFecha.value = hoy;
       }
     });

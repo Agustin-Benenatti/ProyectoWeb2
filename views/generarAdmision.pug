@@ -134,7 +134,7 @@ block content
 
           .form-group
             label(for="fecha_admision") Fecha de Admisión:
-            input#fecha_admision(type="date", name="fecha_admision", required)
+            input#fecha_admision(type="date", name="fecha_admision", required readonly)
 
           .form-group
             label(for="estado") Estado:
@@ -155,18 +155,19 @@ block content
         a.btn-success(href=`/pacientes/crear?dni=${dni}`) Cargar nuevo paciente
 
   script.
-      // hace que el mensaje desaparezca
-      setTimeout(() => {
-        const alert = document.querySelector('.alert');
-        if (alert) {
-          alert.style.transition = 'opacity 0.5s ease-out';
-          alert.style.opacity = '0';
-          setTimeout(() => alert.remove(), 500);
-        }
-      }, 3000);
+    // hace que el mensaje desaparezca a los 3 segundos
+    setTimeout(() => {
+      const alert = document.querySelector('.alert');
+      if (alert) {
+        alert.style.transition = 'opacity 0.5s ease-out';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500);
+      }
+    }, 3000);
 
-      const dniInput = document.getElementById('dni');
-      dniInput.addEventListener('input', () => {
+    // Validación del campo DNI
+    const dniInput = document.getElementById('dni');
+    dniInput.addEventListener('input', () => {
       const raw = dniInput.value;
       const limpio = raw.replace(/\./g, '');
 
@@ -177,3 +178,14 @@ block content
       }
     });
 
+    // Establecer fecha actual por defecto 
+    const fechaAdmisionInput = document.getElementById('fecha_admision');
+    if (fechaAdmisionInput) {
+      const hoy = new Date();
+      const yyyy = hoy.getFullYear();
+      const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+      const dd = String(hoy.getDate()).padStart(2, '0');
+      const hoyStr = `${yyyy}-${mm}-${dd}`;
+
+      fechaAdmisionInput.value = hoyStr;
+    }

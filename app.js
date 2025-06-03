@@ -5,6 +5,7 @@ const pacienteRoutes = require('./route/pacienteRoutes');
 const admisionRoutes = require('./route/admisionRoutes');
 const habitacionRoutes = require('./route/habitacionRoutes');
 const internacionRoutes = require('./route/internacionRoutes');
+const methodOverride = require('method-override');
 
 require('./config/asociaciones');
 
@@ -13,6 +14,9 @@ app.set('views','./views');
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+
+//Middleware para soportar PUT y DELETE en formularios
+app.use(methodOverride('_method'));
 
 app.use('/pacientes', pacienteRoutes);
 

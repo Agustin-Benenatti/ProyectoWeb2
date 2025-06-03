@@ -17,9 +17,12 @@ router.post('/cargar', pacienteValidation(), validarResultados('admision/crearPa
 router.get('/editar/:id', pacienteController.mostrarFormularioEditar);
 
 // Ruta que procesa la informacion que se edito
-router.post('/editar/:id', pacienteValidation(), validarResultados('modificarPaciente'), pacienteController.editarPaciente);
+router.put('/editar/:id', pacienteValidation(), validarResultados('modificarPaciente'), pacienteController.editarPaciente);
+router.post('/editar/:id', pacienteValidation(), validarResultados('modificarPaciente'), pacienteController.editarPaciente); //tuve que poner post ya que no reconoce el put
+                                                                                                                             //por mas que estoy usando method-override
 
 // Ruta para baja logica del paciente
-router.post('/baja/:id', pacienteController.bajaLogica);
+router.put('/baja/:id', pacienteController.bajaLogica);
+router.post('/baja/:id', pacienteController.bajaLogica); // lo mismo aca 
 
 module.exports = router;
