@@ -134,7 +134,8 @@ block content
 
           .form-group
             label(for="fecha_admision") Fecha de Admisión:
-            input#fecha_admision(type="date", name="fecha_admision", required readonly)
+            input(type="hidden", name="fecha_admision", id="fecha_admision_hidden")
+            input(type="date", id="fecha_admision_visible", disabled)
 
           .form-group
             label(for="estado") Estado:
@@ -178,14 +179,15 @@ block content
       }
     });
 
-    // Establecer fecha actual por defecto 
-    const fechaAdmisionInput = document.getElementById('fecha_admision');
-    if (fechaAdmisionInput) {
-      const hoy = new Date();
-      const yyyy = hoy.getFullYear();
-      const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-      const dd = String(hoy.getDate()).padStart(2, '0');
-      const hoyStr = `${yyyy}-${mm}-${dd}`;
+    // Establecer fecha actual por defecto en campo oculto y visible
+    const hoy = new Date();
+    const yyyy = hoy.getFullYear();
+    const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dd = String(hoy.getDate()).padStart(2, '0');
+    const hoyStr = `${yyyy}-${mm}-${dd}`;
 
-      fechaAdmisionInput.value = hoyStr;
-    }
+    const hiddenInput = document.getElementById('fecha_admision_hidden');
+    const visibleInput = document.getElementById('fecha_admision_visible');
+
+    if (hiddenInput) hiddenInput.value = hoyStr;
+    if (visibleInput) visibleInput.value = hoyStr;

@@ -81,11 +81,15 @@ const editarPaciente = async (req, res) => {
     if (!paciente) return res.status(404).send('Paciente no encontrado');
 
     const data = req.body;
+
+    // No permitir cambiar el DNI
+    if ('dni' in data) delete data.dni;
+
     if (!data.id_obra_social || data.id_obra_social === '') {
       data.id_obra_social = null;
     }
 
-        // Manejar peso (opcional)
+    // Manejar peso (opcional)
     if (data.peso && data.peso.trim() !== '') {
       data.peso = parseFloat(data.peso.replace(',', '.'));
       if (isNaN(data.peso)) throw new Error('Peso inválido');

@@ -2,6 +2,7 @@ const TipoAdmision = require('../models/TipoAdmisionModels');
 const Paciente = require('../models/PacienteModels');
 const Admision = require('../models/AdmisionModels');
 const ObraSocial = require('../models/ObraSocialModels');
+const Internacion = require('../models/InternacionModels'); 
 
 // Mostrar panel de admisión
 const mostrarPanel = (req, res) => {
@@ -43,44 +44,22 @@ const buscarPaciente = async (req, res) => {
 //Crear admision y redirigir a la consulta de admisiones
 const crearAdmision = async (req, res) => {
   try {
-    const { fecha_admision, estado, id_tipo_admision, id_paciente } = req.body;
+    const { estado, id_tipo_admision, id_paciente } = req.body;
     const estadoBooleano = estado === '1';
 
-    // Validar que la fecha sea válida
-    const fechaAdmisionDate = new Date(fecha_admision);
-    if (isNaN(fechaAdmisionDate)) {
-      const tiposAdmision = await TipoAdmision.findAll();
-      return res.status(400).render('generarAdmision', {
-        mainClass: '',
-        paciente: { id_paciente },
-        tiposAdmision,
-        errores: [{ msg: 'La fecha de admisión no es válida.' }]
-      });
-    }
-
-    // Validar que la fecha no sea anterior a hoy
+    // Establecer la fecha de admisión como la fecha actual (UTC normalizada)
     const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0); // Ignorar horas para comparar solo fecha
-
-    if (fechaAdmisionDate < hoy) {
-      const tiposAdmision = await TipoAdmision.findAll();
-      return res.status(400).render('generarAdmision', {
-        mainClass: '',
-        paciente: { id_paciente },
-        tiposAdmision,
-        errores: [{ msg: 'La fecha de admisión no puede ser anterior a hoy.' }]
-      });
-    }
+    hoy.setHours(0, 0, 0, 0); 
 
     // Crear la admisión
     await Admision.create({
-      fecha_admision,
+      fecha_admision: hoy,
       estado: estadoBooleano,
       id_tipo_admision,
       id_paciente
     });
 
-    res.redirect('/admision/listaAdmisiones?exito=1'); 
+    res.redirect('/admision/listaAdmisiones?exito=1');
   } catch (error) {
     console.error('Error al crear la admisión:', error);
     res.status(500).send('Error al crear la admisión');
@@ -88,25 +67,30 @@ const crearAdmision = async (req, res) => {
 };
 
 
-
-// Muestro mi lista de pacientes con estado de admision "ADMITIDO"
+// Muestro mi lista de pacientes con estado de admision "ADMITIDO" y sin internacion
 const mostrarPacientesAdmitidos = async (req, res) => {
   try {
     const admisiones = await Admision.findAll({
       where:{estado: true},
       include: [
         {
+          model: Internacion,
+          required: false  
+        },
+        {
           model: Paciente,
           include: [ObraSocial]
         },
         TipoAdmision
       ],
-      
     });
+
+    // Filtrar admisiones que NO tienen internacion
+    const admisionesSinInternacion = admisiones.filter(adm => !adm.Internacion);
 
     const mensajeExito = req.query.exito ? 'Admisión creada correctamente.' : null;
 
-    res.render('listaAdmisiones', { pacientes: admisiones, mensajeExito });
+    res.render('listaAdmisiones', { pacientes: admisionesSinInternacion, mensajeExito });
   } catch (error) {
     console.error('Error al obtener admisiones:', error);
     res.status(500).send('Error al obtener admisiones');
@@ -131,11 +115,57 @@ const darDeBajaAdmision = async (req, res) => {
   }
 };
 
+// Mostrar formulario de admisión NN
+const mostrarFormularioNN = async (req, res) => {
+  try {
+    const tiposAdmision = await TipoAdmision.findAll();
+    const mensajeExito = req.query.exito ? 'Admisión NN creada correctamente.' : null;
+
+    res.render('generarAdmisionNN', { tiposAdmision, mensajeExito });
+  } catch (error) {
+    console.error('Error al cargar formulario NN:', error);
+    res.status(500).send('Error al cargar formulario NN');
+  }
+};
+
+//Admision para el paciente NN
+const crearAdmisionNN = async (req, res) => {
+  try {
+    // Crear un paciente NN con datos genéricos
+    const pacienteNN = await Paciente.create({
+      nombre: 'NN',
+      apellido: 'NN',
+      sexo: 'Sin especificar',
+      dni: 'NN-' + Date.now(), // algo único
+      fecha_nacimiento: new Date(), // se puede ajustar
+      direccion: 'Desconocida',
+      telefono: '0000000000',
+      pacientenn: true,
+      estado: true
+    });
+
+    // Crear admisión para el paciente NN
+    await Admision.create({
+      fecha_admision: new Date(),
+      estado: true,
+      id_tipo_admision: 1, // podés ajustar esto o pasarlo por body
+      id_paciente: pacienteNN.id_paciente
+    });
+
+    res.redirect('/admision/listaAdmisiones?exito=1');
+  } catch (error) {
+    console.error('Error al crear admisión NN:', error);
+    res.status(500).send('Error al crear admisión NN');
+  }
+};
+
 module.exports = {
   mostrarPanel,
   mostrarFormulario,
   buscarPaciente,
   crearAdmision,
   mostrarPacientesAdmitidos,
-  darDeBajaAdmision
+  darDeBajaAdmision,
+  mostrarFormularioNN,
+  crearAdmisionNN,
 };

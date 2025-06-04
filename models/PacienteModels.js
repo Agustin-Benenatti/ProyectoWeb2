@@ -68,7 +68,11 @@ Paciente.init(
             defaultValue: true,
 
         },
-
+        pacientenn: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
 
 
     },

@@ -23,4 +23,9 @@ router.get('/listaAdmisiones', admisionController.mostrarPacientesAdmitidos);
 // Ruta para mi baja logica de Admisiones
 router.get('/baja/:id', admisionController.darDeBajaAdmision);
 
+//Mostar formulario para NN
+router.get('/nn', admisionController.mostrarFormularioNN);
+
+router.post('/nn', admisionController.crearAdmisionNN);
+
 module.exports = router;

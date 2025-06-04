@@ -201,7 +201,7 @@ const crearInternacion = async (req, res) => {
       });
     }
 
-    // Validación: la fecha de ingreso no puede ser posterior a la actual
+    // Validacion: la fecha de ingreso no puede ser posterior a la actual
     const fechaIngresada = new Date(fecha_ingreso);
     const fechaActual = new Date();
     fechaIngresada.setHours(0, 0, 0, 0);
@@ -262,26 +262,35 @@ const crearInternacion = async (req, res) => {
       });
     }
 
-    await Internacion.create({
+    // creo la internacion
+    const nuevaInternacion = await Internacion.create({
       id_admision,
       id_habitacion,
       id_motivo_internacion,
       fecha_ingreso,
-      estado,
+      estado
+    });
+
+    //creo la asignacion de la cama 
+    await AsignacionCama.create({
+      id_internacion: nuevaInternacion.id_internacion,
       id_cama
     });
 
+    //actualizo el estado de la cama a false("ocupado")
     await Cama.update(
       { estado: false },
-      { where: { id_cama: id_cama } }
+      { where: { id_cama } }
     );
 
-    res.redirect('/internaciones');
+    res.redirect('/internacion?mensajeExito=Internación creada correctamente');
+
   } catch (error) {
     console.error('Error al crear la internación:', error);
     res.status(500).send('Error interno del servidor');
   }
 };
+
 
 
 const mostrarListaInternacion = async (req, res) => {

@@ -1,0 +1,119 @@
+extends layout
+
+block head
+  style.
+    body {
+      background-color: #eef1f5;
+      font-family: sans-serif;
+    }
+
+    .form-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .form-container {
+      width: 100%;
+      max-width: 600px;
+      padding: 30px;
+      background: #f4f6f9;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1976d2;
+      margin-bottom: 25px;
+      font-size: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    select {
+      width: 90%;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .info-nn {
+      background-color: #e2e3e5;
+      border: 1px solid #d6d8db;
+      border-radius: 5px;
+      padding: 15px;
+      margin-top: 25px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto 0;
+      padding: 10px 20px;
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background-color: #145aa3;
+    }
+
+block content
+  .form-wrapper
+    .form-container
+      h1 Admitir Paciente NN
+
+      form(action="/admision/nn" method="POST")
+        .form-group
+          label(for="id_tipo_admision") Tipo de Admisión:
+          select#id_tipo_admision(name="id_tipo_admision" required)
+            each tipo in tiposAdmision
+              option(value=tipo.id_tipo_admision)= tipo.nombre
+
+        .info-nn
+          h3 Datos del paciente NN:
+          p Nombre: NN
+          p Apellido: NN
+          p DNI: 
+            span#dniNN (generando...)
+          p Sexo: Sin especificar
+          p Fecha de nacimiento: 
+            span#fechaNacimientoNN
+          p Dirección: Desconocida
+          p Teléfono: 0000000000
+
+        button(type="submit") Confirmar Admisión NN
+
+  script.
+    // Insertar DNI y fecha automática del paciente NN
+    const spanDni = document.getElementById('dniNN');
+    const spanFecha = document.getElementById('fechaNacimientoNN');
+    const now = Date.now();
+    const hoy = new Date();
+
+    const yyyy = hoy.getFullYear();
+    const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dd = String(hoy.getDate()).padStart(2, '0');
+    const fechaStr = `${dd}/${mm}/${yyyy}`;
+
+    if (spanDni) spanDni.textContent = `NN-${now}`;
+    if (spanFecha) spanFecha.textContent = fechaStr;
