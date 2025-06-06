@@ -15,4 +15,5 @@ router.get('/generar-internacion/:id_admision', internacionController.mostrarFor
 // Procesar creación de internación
 router.post('/crear', internacionController.crearInternacion);
 
+router.post('/:id_internacion/alta', internacionController.darAltaInternacion);
 module.exports = router;

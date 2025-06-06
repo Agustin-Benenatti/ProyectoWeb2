@@ -296,6 +296,7 @@ const crearInternacion = async (req, res) => {
 const mostrarListaInternacion = async (req, res) => {
   try {
     const internaciones = await Internacion.findAll({
+      where: {estado:true}, //solo muestro las internaciones activas
       include: [
         {
           model: Admision,
@@ -338,9 +339,44 @@ const mostrarListaInternacion = async (req, res) => {
   }
 };
 
+const darAltaInternacion = async (req, res) => {
+  try {
+    const { id_internacion } = req.params;
+
+    const internacion = await Internacion.findByPk(id_internacion);
+
+    if (!internacion || !internacion.estado) {
+      return res.redirect('/internacion?mensajeError=La internación ya fue dada de alta o no existe');
+    }
+
+    // Actualizar internación (fecha de salida y estado)
+    internacion.estado = false;
+    internacion.fecha_salida = new Date();
+    await internacion.save();
+
+    // Buscar y liberar cama asociada
+    const asignacion = await AsignacionCama.findOne({
+      where: { id_internacion: id_internacion },
+    });
+
+    if (asignacion) {
+      await Cama.update(
+        { estado: true }, // La cama queda libre
+        { where: { id_cama: asignacion.id_cama } }
+      );
+    }
+
+    res.redirect('/internacion?mensajeExito=Internación dada de alta correctamente');
+  } catch (error) {
+    console.error('Error al dar de alta la internación:', error);
+    res.status(500).send('Error interno al dar de alta la internación');
+  }
+};
+
 module.exports = {
   mostrarFormularioInternacion,
   crearInternacion,
   mostrarPanelInternacion,
-  mostrarListaInternacion
+  mostrarListaInternacion,
+  darAltaInternacion,
 };
