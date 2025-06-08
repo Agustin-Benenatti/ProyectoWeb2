@@ -101,9 +101,10 @@ block content
                       span.badge.bg-success Disponible
                     else
                       span.badge.bg-danger Ocupada
+          //EDITE LOS BOTONES PARA QUE NO SE ROMPA LA VISTA, HASTA QUE CORRIJAN LO PEDIDO PARA REGULARIZAR..            
           td
-            a(href=`/habitaciones/editar/${habitacion.id_habitacion}`, class='btn-editar') Modificar
-            a(href=`/habitaciones/eliminar/${habitacion.id_habitacion}`, class='btn-eliminar', onclick='return confirm("¿Estás seguro de eliminar esta habitación?");') Eliminar
+            a(href=`#`, class='btn-editar') Modificar 
+            a(href=`#`, class='btn-eliminar') Eliminar
 
   // Scripts
   script(src='https://code.jquery.com/jquery-3.6.0.min.js')

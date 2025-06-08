@@ -262,6 +262,78 @@ const crearInternacion = async (req, res) => {
       });
     }
 
+      // Verificamos si ya existe una internación activa para esta admisión
+  
+      const admisionActual = await Admision.findByPk(id_admision);
+      if (!admisionActual) {
+        return res.status(404).send('Admisión no encontrada');
+      }
+      const id_paciente = admisionActual.id_paciente;
+
+      // Verificamos si ya existe una internación activa para ese paciente
+      const internacionExistente = await Internacion.findOne({
+        where: { estado: true },
+        include: {
+          model: Admision,
+          where: { id_paciente }
+        }
+      });
+
+      if (internacionExistente) {
+        const admision = await Admision.findByPk(id_admision, {
+          include: [
+            {
+              model: Paciente,
+              include: [ObraSocial]
+            },
+            TipoAdmision
+          ]
+        });
+
+        const habitaciones = await Habitacion.findAll({
+          include: [
+            {
+              model: Cama,
+              as: 'Camas',
+              where: { estado: true },
+              required: true,
+              attributes: ['id_cama', 'numero_cama', 'estado']
+            },
+            {
+              model: Ala,
+              as: 'Ala',
+              attributes: ['id_ala', 'nombre_ala']
+            }
+          ],
+          where: { estado: true },
+          order: [
+            [{ model: Ala, as: 'Ala' }, 'nombre_ala', 'ASC'],
+            ['nro_habitacion', 'ASC']
+          ],
+          distinct: true,
+        });
+
+        const motivos = await MotivoInternacion.findAll({
+          attributes: ['id_motivo_internacion', 'nombre_motivo']
+        });
+
+        const alas = await Ala.findAll({
+          attributes: ['id_ala', 'nombre_ala'],
+          order: [['nombre_ala', 'ASC']]
+        });
+
+        return res.status(400).render('generarInternacion', {
+          admision,
+          habitaciones,
+          motivos,
+          alas,
+          sexoPacienteActual: admision.Paciente.sexo,
+          mainClass: '',
+          error: 'El paciente ya posee una internación activa.',
+          internacionActiva: true
+        });
+      }
+
     // creo la internacion
     const nuevaInternacion = await Internacion.create({
       id_admision,

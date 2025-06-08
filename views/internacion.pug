@@ -113,20 +113,28 @@ block content
               td
                 if internacion.estado
                   form(method='POST', action=`/internacion/${internacion.id_internacion}/alta`, style='display:inline')
+                    input(type='hidden', name='_method', value='PATCH')
                     button(type='submit', class='btn-eliminar') Dar Alta
                 else
                   span.text-muted Ya fue dada de alta
        
 
-  // Scripts
-  script(src='https://code.jquery.com/jquery-3.6.0.min.js')
-  script(src='https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js')
-  script.
-    $(document).ready(function () {
-      $('#tablaInternaciones').DataTable({
-        responsive: true,
-        language: {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
-        }
+    // Scripts
+    script(src='https://code.jquery.com/jquery-3.6.0.min.js')
+    script(src='https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js')
+    script.
+      $(document).ready(function () {
+        $('#tablaInternaciones').DataTable({
+          responsive: true,
+          language: {
+            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+          }
+        });
+
+        // Ocultar alertas después de 3 segundos
+        setTimeout(function () {
+          $('.alert').fadeOut('slow', function () {
+            $(this).remove();
+          });
+        }, 3000);
       });
-    });

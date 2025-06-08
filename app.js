@@ -16,7 +16,14 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
 //Middleware para soportar PUT y DELETE en formularios
-app.use(methodOverride('_method'));
+app.use(methodOverride((req, res) => {
+  const method = req.body && req.body._method;
+  const allowed = ['PATCH', 'PUT'];
+  if (method && allowed.includes(method.toUpperCase())) {
+    return method;
+  }})
+)
+//app.use(methodOverride('_method')); este no me funciona 
 
 app.use('/pacientes', pacienteRoutes);
 
@@ -41,6 +48,10 @@ app.get('/personal-enfermeria', (req, res) => {
 app.use('/internacion',internacionRoutes);
 
 app.use('/habitacion',habitacionRoutes)
+
+app.use((req, res) => {
+  res.status(404).render('error404');
+});
 
 app.listen(3000, () => {
     console.log('Servidor iniciado en el puerto 3000');

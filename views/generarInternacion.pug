@@ -181,7 +181,7 @@ block content
 
       input(type="hidden" name="estado" value="true")
 
-      button#btnConfirmar.btn.btn-primary(type="submit" disabled=yaInternado ? true : false) Confirmar Internación
+      button#btnConfirmar.btn.btn-primary(type="submit" disabled=internacionActiva ? true : false) Confirmar Internación
       a.btn.btn-secondary(href="/internacion") Cancelar
 
     // Modal personalizado
@@ -197,7 +197,7 @@ block content
     const alaSeleccionada = "#{alaSeleccionada || ''}";
     const habitacionSeleccionada = "#{habitacionSeleccionada || ''}";
     const camaSeleccionada = "#{camaSeleccionada || ''}";
-    const pacienteYaInternado = !{JSON.stringify(yaInternado || false)};
+    const pacienteYaInternado = !{JSON.stringify(internacionActiva || false)};
 
     function filtrarHabitaciones() {
       const alaValue = document.getElementById('ala').value;
@@ -225,6 +225,7 @@ block content
         filtrarCamas();
       }
     }
+
     // filtro para mostrar las camas con estado true y higiene true 
     function filtrarCamas() {
       const idHabitacion = document.getElementById('id_habitacion').value;
@@ -266,24 +267,14 @@ block content
 
     function cerrarModal() {
       document.getElementById('customModal').style.display = 'none';
+      document.getElementById('ala').value = "";
+      filtrarHabitaciones();
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      if (alaSeleccionada) filtrarHabitaciones();
-      if (habitacionSeleccionada) filtrarCamas();
-
+    window.onload = function() {
       if (pacienteYaInternado) {
-        document.getElementById('mensajeModal').textContent =
-          "Este paciente ya tiene una internación activa. No se puede registrar otra.";
+        document.getElementById('mensajeModal').textContent = 'El paciente ya posee una internación activa.';
         document.getElementById('customModal').style.display = 'flex';
-
-        const btn = document.getElementById('btnConfirmar');
-        if (btn) btn.disabled = true;
       }
-
-      const inputFecha = document.getElementById('fecha_ingreso');
-      if (inputFecha) {
-        const hoy = new Date().toISOString().split('T')[0];
-        inputFecha.value = hoy;
-      }
-    });
+      filtrarHabitaciones();
+    }

@@ -26,37 +26,44 @@ block head
       text-align: center;
       font-size: 22px;
       margin-bottom: 25px;
-      
     }
 
     button {
       width: 100%;
       margin: 10px 0;
       padding: 10px;
-      background-color: #1976d2;
-      color: white;
       border: none;
       border-radius: 5px;
       font-size: 15px;
       cursor: pointer;
     }
 
-    button:hover {
+    .btn-normal {
+      background-color: #1976d2;
+      color: white;
+    }
+
+    .btn-normal:hover {
       background-color: #1565c0;
+    }
+
+    .btn-danger {
+      background-color: #e53935;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #c62828;
     }
 
 block content
   .panel
     h1 Panel de Admisión
     form(action='/admision/nueva', method='get')
-      button(type='submit', class='boton') Generar Admisión
+      button(type='submit', class='btn-normal') Generar Admisión
 
     form(action='/admision/listaAdmisiones', method='get')
-      button(type='submit', class='boton') Consultar Admisiones
+      button(type='submit', class='btn-normal') Consultar Admisiones
 
     form(action='/admision/nn', method='get')
-      button(type='submit', class='boton') Generar Admisión Paciente NN  
-
-   
-
-    
+      button(type='submit', class='btn-danger') Generar Admisión Paciente NN
