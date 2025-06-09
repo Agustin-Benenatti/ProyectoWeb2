@@ -9,7 +9,7 @@ require("../models/HistorialMedicoModels");
 require("../models/InternacionModels");
 require("../models/MedicoModels");
 require("../models/PacienteModels");
-require("../models/ParteMedico");
+require("../models/ParteMedicoModels");
 require("../models/ContactoEmergenciaModels");
 require("../models/CuidadosPacienteModels");
 require("../models/DiagnosticoModels");
@@ -17,8 +17,9 @@ require("../models/EspecializacionModels");
 require("../models/MotivoInternacionModels");
 require("../models/ObraSocialModels");
 require("../models/TipoAdmisionModels");
-require("../models/Tratamiento");
+require("../models/TratamientoModels");
 require("../models/AlaModels");
+require("../models/AsignacionCamaModels");
 
 
 

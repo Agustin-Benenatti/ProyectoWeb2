@@ -3,18 +3,19 @@ extends layout
 block head
   style.
     form {
-      max-width: 600px;
       margin: 20px auto;
-      padding: 20px;
-      border: 2px solid #1976d2;
+      max-width: 600px;
+      padding: 30px;
+      background: #f4f6f9;
+      border: 1px solid #ccc;
       border-radius: 8px;
-      background-color: #f4f6f9;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
       text-align: center;
       color: #1976d2;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       font-size: 24px;
     }
 
@@ -75,7 +76,7 @@ block content
   - const p = paciente || {}
 
   div 
-    h1 Editar Paciente
+    
 
     if errores && errores.length
       div.mensaje-error
@@ -84,9 +85,9 @@ block content
             li= error.msg
 
     form(action=`/pacientes/editar/${p.id_paciente}`, method="POST")
-      
       // Input oculto para method-override PUT
       input(type="hidden" name="_method" value="PUT")
+      h1 Editar Paciente
 
       .form-row
         .campo
@@ -111,10 +112,10 @@ block content
       .form-row
         .campo
           label(for="peso") Peso: 
-          input(type="number" name="peso" placeholder="Ej: 80kg" min="0" value=p.peso)
+          input(type="number" name="peso" placeholder="Ej: 80kg (opcional)" min="0" value=p.peso)
         .campo
           label(for="altura") Altura: 
-          input(type="number" name="altura" placeholder="Ej: 1.80" min="0" step="0.001" value=p.altura)
+          input(type="number" name="altura" placeholder="Ej: 1.80 (opcional)" min="0" step="0.001" value=p.altura)
 
       .form-row
         .campo

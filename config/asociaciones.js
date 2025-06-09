@@ -1,9 +1,9 @@
 // MODELOS
 const Medico = require('../models/MedicoModels');
 const Especializacion = require('../models/EspecializacionModels');
-const ParteMedico = require('../models/ParteMedico');
+const ParteMedico = require('../models/ParteMedicoModels');
 const Diagnostico = require('../models/DiagnosticoModels');
-const Tratamiento = require('../models/Tratamiento');
+const Tratamiento = require('../models/TratamientoModels');
 const Internacion = require('../models/InternacionModels');
 const MotivoInternacion = require('../models/MotivoInternacionModels');
 const Habitacion = require('../models/HabitacionModels');

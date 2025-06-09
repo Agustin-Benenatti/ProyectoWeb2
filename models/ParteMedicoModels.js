@@ -2,7 +2,7 @@ const {Model,DataTypes} = require("sequelize");
 const sequelize = require("../config/db")
 const Internacion = require("./InternacionModels");
 const Medico = require("./MedicoModels");
-const Tratamiento = require("./Tratamiento");
+const Tratamiento = require("./TratamientoModels");
 const Diagnostico = require("./DiagnosticoModels");
 
 class ParteMedico extends Model {};
