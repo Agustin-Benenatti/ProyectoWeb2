@@ -38,6 +38,7 @@ DB_DIALECT=mysql
 
 Paso 5. Sincroniza la base de datos y carga datos de ejemplo para que puedas probar el funcionamiento de la app (paso opcional):
 ```
+node config/dbSync.js
 node seeders/seed.js
 ```
 Paso 6. Inicia la aplicación ejecutando el siguente comando en la consola:
@@ -159,8 +160,10 @@ Paso 7. Accedé a la app de forma local en tu navegador en http://localhost:3000
 ### 🛏️ Habitaciones
 
 - **GET** `/`  
-  Muestra las habitaciones, el ala y las camas (se pueden ver que cama esta libre o ocupada)
+  Muestra las habitaciones, el ala y las camas (se pueden ver que cama esta libre o ocupada)   
   🖼️ Renderiza: `Habitacion.pug`
 
 
 ---
+
+
