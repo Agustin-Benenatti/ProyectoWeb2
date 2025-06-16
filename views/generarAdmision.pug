@@ -87,6 +87,17 @@ block head
       text-align: center;
     }
 
+    .alert-success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+      border-radius: 4px;
+      text-align: center;
+      max-width: 500px;
+      margin: 20px auto;
+      padding: 15px;
+    }
+
     .btn-success {
       display: block;
       margin: 10px auto;
@@ -114,49 +125,60 @@ block content
             each error in errores
               li= error.msg
 
-      if mensajeExito
-        .alert(style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 4px; padding: 10px; margin-bottom: 20px; text-align: center;")
-          = mensajeExito
-
-      form(action="/admision/buscar-paciente" method="POST")
-        .form-group
-          label(for="dni") Buscar por DNI:
-          input#dni(type="text", name="dni", required placeholder="Ej: 30123456" title="El DNI debe tener entre 7 y 10 dígitos")
-        button(type="submit") Buscar Paciente
+      if mensaje
+        .alert= mensaje
 
       if paciente
-        form(action="/admision/crear" method="POST")
-          input(type="hidden", name="id_paciente", value=paciente.id_paciente)
+        if paciente.estado !== 1
+          
 
-          .form-group
-            label Paciente:
-            p.form-control-static #{paciente.nombre} #{paciente.apellido} (DNI: #{paciente.dni})
+          // Volver a mostrar formulario para buscar otro DNI
+          form(action="/admision/buscar-paciente" method="POST")
+            .form-group
+              label(for="dni") Buscar por DNI:
+              input#dni(type="text" name="dni" required placeholder="Ej: 30123456" value=dni title="El DNI debe tener entre 7 y 10 dígitos")
+            button(type="submit") Buscar Paciente
+        else
+          form(action="/admision/crear" method="POST")
+            input(type="hidden" name="id_paciente" value=paciente.id_paciente)
 
-          .form-group
-            label(for="fecha_admision") Fecha de Admisión:
-            input(type="hidden", name="fecha_admision", id="fecha_admision_hidden")
-            input(type="date", id="fecha_admision_visible", disabled)
+            .form-group
+              label Paciente:
+              p.form-control-static #{paciente.nombre} #{paciente.apellido} (DNI: #{paciente.dni})
 
-          .form-group
-            label(for="estado") Estado:
-            select#estado(name="estado", required)
-              option(value="1") Confirmada
-              option(value="0") Cancelada
+            .form-group
+              label(for="fecha_admision") Fecha de Admisión:
+              input(type="hidden" name="fecha_admision" id="fecha_admision_hidden")
+              input(type="date" id="fecha_admision_visible" disabled)
 
-          .form-group
-            label(for="id_tipo_admision") Tipo de Admisión:
-            select#id_tipo_admision(name="id_tipo_admision", required)
-              each tipo in tiposAdmision
-                option(value=tipo.id_tipo_admision)= tipo.nombre
+            .form-group
+              label(for="estado") Estado:
+              select#estado(name="estado" required)
+                option(value="" disabled selected) -- Seleccionar Estado --
+                option(value="1") Confirmada
+                option(value="0") Cancelada
 
-          button(type="submit") Guardar Admisión
+            .form-group
+              label(for="id_tipo_admision") Tipo de Admisión:
+              select#id_tipo_admision(name="id_tipo_admision" required)
+                option(value="" disabled selected) -- Seleccionar Tipo --
+                each tipo in tiposAdmision
+                  option(value=tipo.id_tipo_admision)= tipo.nombre
 
-      else if mensaje
-        .alert= mensaje
-        a.btn-success(href=`/pacientes/crear?dni=${dni}`) Cargar nuevo paciente
+            button(type="submit") Guardar Admisión
+
+      else
+        if dni
+          a.btn-success(href=`/pacientes/crear?dni=${dni}`) Cargar nuevo paciente
+        else
+          form(action="/admision/buscar-paciente" method="POST")
+            .form-group
+              label(for="dni") Buscar por DNI:
+              input#dni(type="text" name="dni" required placeholder="Ej: 30123456" title="El DNI debe tener entre 7 y 10 dígitos")
+            button(type="submit") Buscar Paciente
 
   script.
-    // hace que el mensaje desaparezca a los 3 segundos
+    // Hace que el mensaje desaparezca a los 3 segundos
     setTimeout(() => {
       const alert = document.querySelector('.alert');
       if (alert) {
@@ -168,18 +190,23 @@ block content
 
     // Validación del campo DNI
     const dniInput = document.getElementById('dni');
-    dniInput.addEventListener('input', () => {
-      const raw = dniInput.value;
-      const limpio = raw.replace(/\./g, '');
+    if (dniInput) {
+      dniInput.addEventListener('input', () => {
+        const raw = dniInput.value;
+        const limpio = raw.replace(/\./g, '');
 
-      if (!/^[0-9.]*$/.test(raw) || limpio.length < 7 || limpio.length > 10) {
-        dniInput.setCustomValidity('El DNI debe tener entre 7 y 10 dígitos');
-      } else {
-        dniInput.setCustomValidity('');
-      }
-    });
+        if (!/^[0-9.]*$/.test(raw) || limpio.length < 7 || limpio.length > 10) {
+          dniInput.setCustomValidity('El DNI debe tener entre 7 y 10 dígitos');
+        } else {
+          dniInput.setCustomValidity('');
+        }
+      });
 
-    // Establecer fecha actual por defecto en campo oculto y visible
+      
+      dniInput.focus();
+    }
+
+    // Establecer fecha actual por defecto
     const hoy = new Date();
     const yyyy = hoy.getFullYear();
     const mm = String(hoy.getMonth() + 1).padStart(2, '0');

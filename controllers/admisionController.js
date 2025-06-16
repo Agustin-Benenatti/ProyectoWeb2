@@ -30,7 +30,12 @@ const buscarPaciente = async (req, res) => {
     const tiposAdmision = await TipoAdmision.findAll();
 
     if (paciente) {
-      res.render('generarAdmision', { mainClass: '', paciente, tiposAdmision });
+      if (paciente.estado !== 1) {
+        const mensaje = `El paciente existe pero está inactivo. No se puede generar una admisión.`;
+        return res.render('generarAdmision', { mainClass: '', mensaje, tiposAdmision, paciente });
+      }
+
+      return res.render('generarAdmision', { mainClass: '', paciente, tiposAdmision });
     } else {
       const mensaje = `Paciente no encontrado. ¿Desea registrarlo?`;
       res.render('generarAdmision', { mainClass: '', mensaje, tiposAdmision, dni });
