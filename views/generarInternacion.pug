@@ -176,8 +176,7 @@ block content
 
       .form-group
         label(for="fecha_ingreso") Fecha de Ingreso
-        - var fechaHoy = new Date().toISOString().split('T')[0]
-        input#fecha_ingreso.form-control(type="date" name="fecha_ingreso" value=fechaHoy readonly)
+        input#fecha_ingreso.form-control(type="date" name="fecha_ingreso" readonly)
 
       input(type="hidden" name="estado" value="true")
 
@@ -226,7 +225,6 @@ block content
       }
     }
 
-    // filtro para mostrar las camas con estado true y higiene true 
     function filtrarCamas() {
       const idHabitacion = document.getElementById('id_habitacion').value;
       const selectCama = document.getElementById('id_cama');
@@ -249,7 +247,7 @@ block content
         document.getElementById('customModal').style.display = 'flex';
         return;
       }
-      // valida que el estado de la cama y la higiene sea true
+
       if (habitacion && Array.isArray(habitacion.Camas)) {
         habitacion.Camas
           .filter(cama => cama.estado === true && cama.higiene === true)
@@ -276,5 +274,13 @@ block content
         document.getElementById('mensajeModal').textContent = 'El paciente ya posee una internación activa.';
         document.getElementById('customModal').style.display = 'flex';
       }
+
+      // Setear la fecha de ingreso local en formato yyyy-mm-dd
+      const hoy = new Date();
+      const yyyy = hoy.getFullYear();
+      const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+      const dd = String(hoy.getDate()).padStart(2, '0');
+      document.getElementById('fecha_ingreso').value = `${yyyy}-${mm}-${dd}`;
+
       filtrarHabitaciones();
     }

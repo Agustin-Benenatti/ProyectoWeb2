@@ -129,10 +129,9 @@ block content
         .alert= mensaje
 
       if paciente
-        if paciente.estado !== 1
+        if !paciente.estado
           
 
-          // Volver a mostrar formulario para buscar otro DNI
           form(action="/admision/buscar-paciente" method="POST")
             .form-group
               label(for="dni") Buscar por DNI:
@@ -166,7 +165,6 @@ block content
                   option(value=tipo.id_tipo_admision)= tipo.nombre
 
             button(type="submit") Guardar Admisión
-
       else
         if dni
           a.btn-success(href=`/pacientes/crear?dni=${dni}`) Cargar nuevo paciente
@@ -202,7 +200,6 @@ block content
         }
       });
 
-      
       dniInput.focus();
     }
 
