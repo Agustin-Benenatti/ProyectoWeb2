@@ -5,7 +5,7 @@
 
 ## Descripción general 
 
-Este proyecto lo desarrollade durante la cursada de la materia **Programación Web 2**, con el objetivo de construir una aplicación web orientada a la gestión de **Admisiones e Internaciones hospitalarias**.
+Este proyecto lo desarrollade durante la cursada de la materia **Programación Web 2** a lo largo del cuatrimestre, con el objetivo de construir una aplicación web orientada a la gestión de **Admisiones e Internaciones hospitalarias**.
 
 ## Estado del proyecto 
 
@@ -31,7 +31,7 @@ Paso 4. Creá un archivo .env en la raíz del proyecto para configurar las varia
 DB_NAME=hospital
 DB_USER=root
 DB_PASS=1234
-DB_HOST=111.11.1
+DB_HOST=123.45.6
 DB_PORT=3306
 DB_DIALECT=mysql
 ```
@@ -58,17 +58,69 @@ Paso 7. Accedé a la app de forma local en tu navegador en http://localhost:3000
 - Listado de habitaciones con sus camas ocupadas y libres.
 - Admision e Internacion para un paciente NN.
 
-### Tecnologías utilizadas 
-- **Node.js + Express:** para el desarrollo del backend y gestión de rutas.
-- **Sequelize:** ORM para definir los modelos, relaciones y ejecutar consultas a la base de datos.
-- **SQL:** comprensión del modelo relacional. Mediante **MySQL**
-- **PUG:** motor de plantillas para renderizar vistas (formularios y listados).
-- **CSS:** estilización de vistas.
-- **Dotenv:** carga de variables de entorno desde archivos `.env`
-- **Method-Override:** permite el uso de métodos HTTP como PUT y PATCH desde los formularios.
-- **Express-Validator:** permite la validación desde el lado del backend.
-- **Nodemon:** herramienta para reiniciar el servidor durante el desarrollo.
-- **DataTable:** Para mostrar informacion del paciente, admisiones, Internaciones,habitaciones, etc
+### Tecnologías utilizadas
+
+Este proyecto fue desarrollado utilizando las siguientes tecnologías y herramientas:
+
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express.js](https://img.shields.io/badge/Express.js-404D59?style=for-the-badge)
+**Node.js + Express**: Para el desarrollo del backend y la gestión de rutas.
+
+![Sequelize](https://img.shields.io/badge/Sequelize-52B0E7?style=for-the-badge&logo=sequelize&logoColor=white)  
+**Sequelize**: ORM para definir modelos, relaciones y ejecutar consultas SQL (MySQL).
+
+![MySQL](https://img.shields.io/badge/MySQL-00758F?style=for-the-badge&logo=mysql&logoColor=white)  
+**MySQL**: Sistema de gestión de bases de datos relacional.
+
+![Pug](https://img.shields.io/badge/Pug-FFF?style=for-the-badge&logo=pug&logoColor=A86454)  
+**PUG**: Motor de plantillas para renderizar vistas como formularios y listados dinámicos.
+
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)  
+**CSS**: Utilizado para estilizar las vistas renderizadas.
+
+![Dotenv](https://img.shields.io/badge/Dotenv-8DD6F9?style=for-the-badge&logo=dotenv&logoColor=black)  
+**Dotenv**: Permite cargar variables de entorno desde un archivo `.env`.
+
+![Method-Override](https://img.shields.io/badge/Method--Override-gray?style=for-the-badge)  
+**Method-Override**: Permite el uso de métodos PUT y PATCH desde formularios HTML.
+
+![Express-Validator](https://img.shields.io/badge/Express--Validator-6C3483?style=for-the-badge)  
+**Express-Validator**: Middleware para validaciones desde el backend.
+
+![Nodemon](https://img.shields.io/badge/Nodemon-76D04B?style=for-the-badge&logo=nodemon&logoColor=white)  
+**Nodemon**: Reinicia el servidor automáticamente durante el desarrollo ante cambios en el código.
+
+![DataTables](https://img.shields.io/badge/DataTable-1E90FF?style=for-the-badge)  
+**DataTables**: Librería para mostrar tablas interactivas (como pacientes, internaciones, habitaciones, etc.).
+
+![Bootstrap](https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)  
+**Bootstrap**: Framework CSS para diseño responsivo y componentes estilizados.
+
+
+###  -Estructura del proyecto
+
+
+```
+PROYECTOWEB2/
+├── config/              # Configuración de base de datos y otros parámetros
+├── controllers/         # Controladores con la lógica de las rutas
+├── middlewares/         # Middlewares personalizados (validaciones)
+├── models/              # Modelos Sequelize de la base de datos
+├── node_modules/        # Dependencias instaladas con npm
+├── public/              # Archivos estáticos (CSS, JS, imágenes)
+├── route/               # Definición de rutas de la aplicación
+├── seeders/             # Datos iniciales para la base de datos
+├── validators/          # Validaciones para formularios o inputs
+├── views/               # Vistas con motor de plantillas Pug
+├── .env                 # Variables de entorno
+├── .gitattributes       # Configuración de Git (atributos)
+├── .gitignore           # Archivos/Carpetas ignorados por Git
+├── app.js               # Archivo principal de arranque del servidor
+├── package-lock.json    # Versiones exactas de dependencias
+├── package.json         # Dependencias y scripts del proyecto
+└── README.md            # Documentación del proyecto
+
+```
 
 ## EndPoints 
 
@@ -76,27 +128,27 @@ Paso 7. Accedé a la app de forma local en tu navegador en http://localhost:3000
 
 - **GET** `/`  
   Muestra todos los pacientes registrados en el hospital  
-  🖼️ Renderiza: `Paciente.pug`
+   Renderiza: `Paciente.pug`
 
 
 - **GET** `/crear`  
   Muestra el formulario para la creación de un paciente  
-  🖼️ Renderiza: `CrearPaciente.pug`
+   Renderiza: `CrearPaciente.pug`
 
 - **POST** `/cargar`  
   Registra un nuevo paciente desde un formulario
 
 - **GET** `/editar/:id`  
   Muestra el formulario para editar un paciente  
-  🖼️ Renderiza: `modificarPaciente.pug`
+   Renderiza: `modificarPaciente.pug`
 
 - **PUT** `/editar/:id`  
   Actualiza la información de un paciente especificado  
-  🧾 Parámetros: ID del paciente
+   Parámetros: ID del paciente
 
 - **PATCH** `/baja/:id`  
   Actualiza el estado de un paciente especificado  
-  🧾 Parámetros: ID del paciente
+   Parámetros: ID del paciente
 
 ---
 
@@ -104,11 +156,11 @@ Paso 7. Accedé a la app de forma local en tu navegador en http://localhost:3000
 
 - **GET** `/`  
   Muestra el panel de admisión  
-  🖼️ Renderiza: `Admision.pug`
+  Renderiza: `Admision.pug`
 
 - **GET** `/nueva`  
   Muestra el formulario para registrar una nueva admisión  
-  🖼️ Renderiza: `/generarAdmision.pug`
+   Renderiza: `/generarAdmision.pug`
 
 - **POST** `/buscar-paciente`  
   Busca un paciente por el Dni  
@@ -118,11 +170,11 @@ Paso 7. Accedé a la app de forma local en tu navegador en http://localhost:3000
   
 - **GET** `/listaAdmisiones`  
   Muestra el formulario para registrar una nueva admisión  
-  🖼️ Renderiza: `/listaAdmisiones.pug`
+   Renderiza: `/listaAdmisiones.pug`
 
 - **GET** `/nn`  
   Muestra el formulario para registrar una admisión de un paciente NN  
-  🖼️ Renderiza: `/generarAdmisionNN.pug`
+   Renderiza: `/generarAdmisionNN.pug`
 
 - **POST** `/nn`  
   Registra una nueva admisión desde el formulario para registrar una persona NN  
@@ -138,22 +190,22 @@ Paso 7. Accedé a la app de forma local en tu navegador en http://localhost:3000
 
 - **GET** `/`  
   Muestra el panel principal  
-  🖼️ Renderiza: `/internacion.pug`
+   Renderiza: `/internacion.pug`
 
 - **GET** `/lista`  
   Muestra la lista de pacientes internados  
-  🖼️ Renderiza: `/internacion.pug`
+   Renderiza: `/internacion.pug`
 
 - **GET** `/generar-internacion/:id_admision`  
   Muestra el formulario para internar un paciente  
-  🖼️ Renderiza: `/GenerarInternacion.pug`
+   Renderiza: `/GenerarInternacion.pug`
 
 - **POST** `/crear`  
   Registra una nueva internacion desde el formulario 
   
 - **PATCH** `/baja/:id`  
   Actualiza el estado de internacion del paciente para darle una alta  
-  🧾 Parámetros: ID de internacion
+   Parámetros: ID de internacion
 
 ---
 
@@ -161,7 +213,7 @@ Paso 7. Accedé a la app de forma local en tu navegador en http://localhost:3000
 
 - **GET** `/`  
   Muestra las habitaciones, el ala y las camas (se pueden ver que cama esta libre o ocupada)   
-  🖼️ Renderiza: `Habitacion.pug`
+   Renderiza: `Habitacion.pug`
 
 
 ---
