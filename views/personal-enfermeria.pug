@@ -1,5 +1,111 @@
-extends layout 
+extends layout
 
-block content 
-    h1 Gestion de enfermeria
-    p En proceso...
+block head 
+  style.
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: bold;
+    }
+
+    .table-container {
+      margin-top: 40px;
+    }
+
+    table.display {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px auto;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    table.display th {
+      background-color: #f0f0f0;
+      text-align: center !important;
+      padding: 10px;
+      font-weight: 600;
+    }
+
+    table.display td {
+      text-align: center;
+      padding: 8px;
+      vertical-align: middle !important;
+    }
+
+    table.dataTable thead th {
+      background-color: #1976d2;
+      color: white;
+    }
+
+    .btn-accion {
+      background-color: #1976d2;  
+      color: white;
+      padding: 5px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-accion:hover {
+      background-color: #115293;
+    }
+
+    .badge-urgencia {
+      background-color: #d32f2f;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    .badge-normal {
+      background-color: #1976d2;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+
+block content
+  .container.table-container
+    h1 Pacientes en Espera (Enfermería)
+
+    link(rel='stylesheet', href='https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css')
+
+    table#tablaEnfermeria.display
+      thead
+        tr
+          th Fecha de Admisión
+          th Nombre
+          th Apellido
+          th DNI
+          th Tipo de Admisión
+          th Acciones
+      tbody
+        if admisionesPendientes && admisionesPendientes.length > 0
+          each admision in admisionesPendientes
+            tr
+              td= admision.fecha_admision ? admision.fecha_admision.toISOString().split('T')[0] : ''
+              td= admision.Paciente ? admision.Paciente.nombre : ''
+              td= admision.Paciente ? admision.Paciente.apellido : ''
+              td= admision.Paciente ? admision.Paciente.dni : ''
+              td
+                if admision.TipoAdmision && admision.TipoAdmision.nombre === 'Emergencia'
+                  span.badge-urgencia= admision.TipoAdmision.nombre
+                else
+                  span.badge-normal= admision.TipoAdmision ? admision.TipoAdmision.nombre : 'General'
+              td
+                a.btn-accion(href=`/internacion/generar-internacion/${admision.id_admision}`) Asignar Cama y Evaluar
+
+  // Scripts
+  script(src='https://code.jquery.com/jquery-3.6.0.min.js')
+  script(src='https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js')
+  script.
+    $(document).ready(function () {
+      $('#tablaEnfermeria').DataTable({
+        responsive: true,
+        language: {
+          url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+        }
+      });
+    });

@@ -40,6 +40,32 @@ EvaluacionEnfermeria.init (
             },
             onDelete: "CASCADE",
         },
+        sintomas: {
+            type: DataTypes.STRING,
+            allowNull: false,
+
+        },
+        presion_arterial: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        
+        },
+        frecuencia_cardiaca: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        frecuencia_respiratoria: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        temperatura: {
+            type: DataTypes.FLOAT,
+            allowNull: true,
+        },
+        plan_cuidados: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
         observaciones: {
             type: DataTypes.STRING,
             allowNull: false,

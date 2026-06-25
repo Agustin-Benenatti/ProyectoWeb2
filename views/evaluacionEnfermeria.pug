@@ -1,0 +1,66 @@
+extends layout
+
+block head
+  style.
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background-color: #f9f9f9;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 { text-align: center; margin-bottom: 30px; font-size: 24px; }
+    .form-group { margin-bottom: 20px; }
+    label { font-weight: bold; display: block; margin-bottom: 5px; }
+    .form-control { width: 100%; padding: 10px; font-size: 16px; box-sizing: border-box; }
+    .btn { padding: 10px 20px; font-size: 16px; border-radius: 5px; margin-right: 10px; }
+    .btn-primary { background-color: #007bff; border: none; color: white; }
+    .btn-secondary { background-color: #6c757d; border: none; color: white; }
+
+block content
+  .container
+    h1 Evaluación Inicial de Enfermería
+    p.text-center Paciente: 
+      strong #{internacion.Admision.Paciente.nombre} #{internacion.Admision.Paciente.apellido}
+
+    form(action=`/enfermeria/evaluar/${internacion.id_internacion}` method="POST")
+      
+      .form-group
+        label(for="sintomas") Motivo de Internación y Síntomas:
+        textarea#sintomas.form-control(name="sintomas" rows="3" required placeholder="Describa los síntomas principales...")
+
+      h4(style="margin-top: 20px; margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 5px;") Signos Vitales
+      
+      .form-group
+        label(for="presion_arterial") Presión Arterial (ej. 120/80):
+        input#presion_arterial.form-control(type="text" name="presion_arterial" placeholder="120/80")
+      
+      .form-group
+        label(for="frecuencia_cardiaca") Frecuencia Cardíaca (lpm):
+        input#frecuencia_cardiaca.form-control(type="number" name="frecuencia_cardiaca")
+      
+      .form-group
+        label(for="frecuencia_respiratoria") Frec. Respiratoria (rpm):
+        input#frecuencia_respiratoria.form-control(type="number" name="frecuencia_respiratoria")
+      
+      .form-group
+        label(for="temperatura") Temperatura (°C):
+        input#temperatura.form-control(type="number" step="0.1" name="temperatura" placeholder="36.5")
+
+      h4(style="margin-top: 20px; margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 5px;") Plan de Cuidados
+      
+      .form-group
+        label(for="id_cuidado_paciente") Selección del Catálogo:
+        select#id_cuidado_paciente.form-control(name="id_cuidado_paciente" required)
+          option(value="" disabled selected) Seleccione un cuidado del catálogo...
+          each cuidado in listaCuidados
+            option(value=cuidado.id_cuidado_paciente) #{cuidado.descripcion}
+
+      .form-group
+        label(for="plan_cuidados") Detalles adicionales (Opcional):
+        textarea#plan_cuidados.form-control(name="plan_cuidados" rows="3" placeholder="Escriba aquí notas, dosificación o detalles específicos...")
+
+      .form-group(style="margin-top: 30px;")
+        button.btn.btn-primary(type="submit") Guardar Evaluación
+        a.btn.btn-secondary(href="/enfermeria") Cancelar

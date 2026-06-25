@@ -142,7 +142,7 @@ block content
             td= admision.estado ? 'Admitido' : 'Cancelado'
             td= admision.TipoAdmision ? admision.TipoAdmision.nombre : ''
             td
-              a(href=`/internacion/generar-internacion/${admision.id_admision}`, class='btn-editar') Internar
+              //a(href=`/internacion/generar-internacion/${admision.id_admision}`, class='btn-editar') Internar
               a(href='#', class='btn-eliminar cancelar-btn', data-id=admision.id_admision) Cancelar Admisión
 
     // Modal de confirmación

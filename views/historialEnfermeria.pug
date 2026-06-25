@@ -1,0 +1,43 @@
+extends layout
+
+block head
+  style.
+    .container { max-width: 600px; margin: 50px auto; background-color: #f9f9f9; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+    h1 { text-align: center; margin-bottom: 30px; font-size: 24px; color: #333; }
+    h4 { margin-top: 25px; border-bottom: 2px solid #007bff; padding-bottom: 5px; color: #007bff; }
+    .info-group { margin-bottom: 15px; }
+    .label { font-weight: bold; color: #555; }
+    .value { margin-left: 10px; color: #000; }
+    .btn-secondary { background-color: #6c757d; border: none; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block; margin-top: 20px; }
+
+block content
+  .container
+    h1 Evaluación de Enfermería
+    
+    .info-group
+      span.label Motivo de Internación:
+      span.value #{evaluacion.sintomas}
+
+    h4 Signos Vitales
+    .info-group
+      span.label Presión Arterial:
+      span.value #{evaluacion.presion_arterial || 'N/A'}
+    .info-group
+      span.label Frecuencia Cardíaca:
+      span.value #{evaluacion.frecuencia_cardiaca || 'N/A'} lpm
+    .info-group
+      span.label Frecuencia Respiratoria:
+      span.value #{evaluacion.frecuencia_respiratoria || 'N/A'} rpm
+    .info-group
+      span.label Temperatura:
+      span.value #{evaluacion.temperatura ? evaluacion.temperatura + ' °C' : 'N/A'}
+
+    h4 Plan de Cuidados
+    .info-group
+      span.label Cuidado del Catálogo:
+      span.value #{evaluacion.CuidadoPaciente ? evaluacion.CuidadoPaciente.descripcion : 'No especificado'}
+    .info-group
+      span.label Observaciones / Detalles:
+      p.value #{evaluacion.plan_cuidados || 'Sin detalles adicionales.'}
+
+    a.btn-secondary(href="/internacion") Volver al Panel

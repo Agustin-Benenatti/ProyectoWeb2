@@ -18,4 +18,6 @@ router.post('/crear', internacionController.crearInternacion);
 //Ruta para la baja logica de internación
 router.patch('/:id_internacion/alta', internacionController.darAltaInternacion);
 
+router.get('/historial/:id_internacion', internacionController.mostrarHistorialEnfermeria);
+
 module.exports = router;

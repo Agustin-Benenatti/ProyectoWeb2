@@ -8,6 +8,8 @@ const TipoAdmision = require('../models/TipoAdmisionModels');
 const Cama = require('../models/CamaModels');
 const AsignacionCama = require('../models/AsignacionCamaModels');
 const Ala = require('../models/AlaModels');
+const EvaluacionEnfermeria = require('../models/EvaluacionEnfermeriaModels');
+const CuidadoPaciente = require('../models/CuidadosPacienteModels');
 
 const mostrarPanelInternacion = async (req, res) => {
   try {
@@ -355,7 +357,7 @@ const crearInternacion = async (req, res) => {
       { where: { id_cama } }
     );
 
-    res.redirect('/internacion?mensajeExito=Internación creada correctamente');
+    res.redirect(`/enfermeria/evaluar/${nuevaInternacion.id_internacion}`);
 
   } catch (error) {
     console.error('Error al crear la internación:', error);
@@ -445,10 +447,31 @@ const darAltaInternacion = async (req, res) => {
   }
 };
 
+const mostrarHistorialEnfermeria= async (req, res) => {
+ try {
+        const { id_internacion } = req.params;
+        
+        const evaluacion = await EvaluacionEnfermeria.findOne({
+            where: { id_internacion },
+            include: [CuidadoPaciente]
+        });
+
+        if (!evaluacion) {
+            return res.status(404).send('No se encontró una evaluación de enfermería para este paciente.');
+        }
+
+        res.render('historialEnfermeria', { evaluacion });
+    } catch (error) {
+        console.error('Error al cargar la evaluación:', error);
+        res.status(500).send('Error interno del servidor');
+    }
+};
+
 module.exports = {
   mostrarFormularioInternacion,
   crearInternacion,
   mostrarPanelInternacion,
   mostrarListaInternacion,
   darAltaInternacion,
+  mostrarHistorialEnfermeria,
 };

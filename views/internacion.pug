@@ -35,6 +35,20 @@ block head
     .btn-eliminar:hover {
       background-color: #9a2222; 
     }
+    .btn-historial {
+      background-color: #007bff; 
+      color: white;
+      padding: 5px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-right: 5px;
+      display: inline-block;
+    }
+    .btn-historial:hover {
+      background-color: #0056b3;
+      color: white;
+    }
 
     .alert {
       text-align: center;
@@ -110,13 +124,16 @@ block content
               td
                 if internacion.fecha_ingreso
                   = internacion.fecha_ingreso.toISOString().split('T')[0]
+                  
               td
+                a.btn-historial(href=`/internacion/historial/${internacion.id_internacion}`) Historial
                 if internacion.estado
                   form(method='POST', action=`/internacion/${internacion.id_internacion}/alta`, style='display:inline')
                     input(type='hidden', name='_method', value='PATCH')
                     button(type='submit', class='btn-eliminar') Dar Alta
                 else
                   span.text-muted Ya fue dada de alta
+             
        
 
     // Scripts

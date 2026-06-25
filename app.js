@@ -1,10 +1,12 @@
 const express = require('express');
 const pug = require('pug');
 const app = express();
+const sequelize = require('./config/db');
 const pacienteRoutes = require('./route/pacienteRoutes');
 const admisionRoutes = require('./route/admisionRoutes');
 const habitacionRoutes = require('./route/habitacionRoutes');
 const internacionRoutes = require('./route/internacionRoutes');
+const enfermeriaRoutes = require('./route/enfermeriaRoutes');
 const methodOverride = require('method-override');
 
 require('./config/asociaciones');
@@ -40,20 +42,30 @@ app.get('/personal-medico',(req, res) => {
     res.render('personal-medico', {mainClass: ''})
 });
 
-app.get('/personal-enfermeria', (req, res) => {
-
-    res.render('personal-enfermeria', {mainClass: ''})
-});
+app.use('/personal-enfermeria', enfermeriaRoutes);
 
 app.use('/internacion',internacionRoutes);
 
 app.use('/habitacion',habitacionRoutes)
+ 
+app.use('/enfermeria',enfermeriaRoutes);
 
 app.use((req, res) => {
   res.status(404).render('error404');
 });
 
+
 app.listen(3000, () => {
     console.log('Servidor iniciado en el puerto 3000');
-    
 });
+
+/*sequelize.sync({ alter: true })
+  .then(() => {
+    console.log('Base de datos sincronizada y actualizada correctamente.');
+    app.listen(3000, () => {
+        console.log('Servidor iniciado en el puerto 3000');
+    });
+  })
+  .catch((error) => {
+    console.error('Error al sincronizar la base de datos:', error);
+  });*/
